@@ -1,0 +1,11 @@
+Package: analyzr
+Type: Package
+Title: Support Package for Data Analysis with R (FLC)
+Version: 0.1.0
+Author: Jerid Francom <francojc@wfu.edu>
+Maintainer: Jerid Francom <francojc@wfu.edu>
+Description: Provides functions, data, and vignettes to support the Data Analysis with R for the Wake Forest University Faculty Learning Community
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.1.0
