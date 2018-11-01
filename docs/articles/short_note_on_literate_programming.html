@@ -77,9 +77,9 @@
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1>A Short Note on Literate Programming</h1>
-                        <h4 class="author">Vignette Author</h4>
+                        <h4 class="author">Jerid Francom</h4>
             
-            <h4 class="date">2018-10-24</h4>
+            <h4 class="date">2018-11-01</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/WFU-TLC/analyzr/blob/master/vignettes/short_note_on_literate_programming.Rmd"><code>vignettes/short_note_on_literate_programming.Rmd</code></a></small>
       <div class="hidden name"><code>short_note_on_literate_programming.Rmd</code></div>
@@ -88,22 +88,23 @@
 
     
     
-<p><strong>Literate programming</strong> means you can include prose and code into the same document. In R, files with the extension <code>.Rmd</code> are R Markdown documents. R Markdown includes the power of Markdown to format text, include graphics, citations, etc. and the programming functionality of R (as well as other languages too).</p>
+<div id="hello-world" class="section level3">
+<h3 class="hasAnchor">
+<a href="#hello-world" class="anchor"></a>Hello world!</h3>
+<p><strong>Literate programming</strong> means you can include prose and code into the same document. In R, files with the extension <code>.Rmd</code> are R Markdown documents. R Markdown includes the power of Markdown to format text, include graphics, citations, <em>etc</em>. and the programming functionality of R (as well as other languages too).</p>
 <p>To introduce code into a document we insert a <em>code chunk</em> which encloses a section of the document where code will be run and the output returned.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># A comment to describe the code</span></a>
 <a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">paste</span>(<span class="st">"Hello world!"</span>)</a>
 <a class="sourceLine" id="cb1-3" data-line-number="3"><span class="co">#&gt; [1] "Hello world!"</span></a></code></pre></div>
 <p>Code chunks have various <em>parameters</em> which allow the user to control various aspects of the behavior of the code. Let’s use one right now to get ourselves ready for the rest of the session. <code>echo=FALSE</code> turns off the default behavior of showing the code that runs. It will not, however, turn off the output (the <code>results='hide'</code> parameter and attribute will do that).</p>
-<pre><code>#&gt; ── Attaching packages ─────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
-#&gt; ✔ ggplot2 3.0.0     ✔ purrr   0.2.5
-#&gt; ✔ tibble  1.4.2     ✔ dplyr   0.7.6
-#&gt; ✔ tidyr   0.8.1     ✔ stringr 1.3.1
-#&gt; ✔ readr   1.1.1     ✔ forcats 0.3.0
-#&gt; ── Conflicts ────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
-#&gt; ✖ dplyr::filter() masks stats::filter()
-#&gt; ✖ dplyr::lag()    masks stats::lag()</code></pre>
 <p><em>Note: no code returned in the rendered document!</em></p>
 <p>As you work with the other vignettes which cover other topics in R programming in this package, take a look at the source <code>.Rmd</code> files. Note the behavior of prose and code in this files to get a sense of how things work!</p>
+</div>
+<div id="more-information" class="section level3">
+<h3 class="hasAnchor">
+<a href="#more-information" class="anchor"></a>More information</h3>
+<p>To get a basic overview of literate programming in R the <a href="https://rmarkdown.rstudio.com">RStudio</a> website has documentation that covers the fundamentals of working with the RMarkdown format for various types of output (web documents, PDF documents, Word documents, <em>etc.</em>). For a more comprehensive resource consult <a href="https://bookdown.org/yihui/rmarkdown/">R Markdown: The Definitive Guide</a>.</p>
+</div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
