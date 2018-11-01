@@ -1,0 +1,6 @@
+pandoc: 2.3.1
+pkgdown: 1.1.0
+pkgdown_sha: ~
+articles:
+  short_note_on_literate_programming: short_note_on_literate_programming.html
+

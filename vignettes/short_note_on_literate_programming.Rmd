@@ -1,0 +1,42 @@
+---
+title: "A Short Note on Literate Programming"
+author: "Jerid Francom"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{A Short Note on Literate Programming}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+### Hello world!
+
+**Literate programming** means you can include prose and code into the same document. In R, files with the extension `.Rmd` are R Markdown documents. R Markdown includes the power of Markdown to format text, include graphics, citations, *etc*. and the programming functionality of R (as well as other languages too).
+
+To introduce code into a document we insert a *code chunk* which encloses a section of the document where code will be run and the output returned.
+
+```{r meaningful-chunk-label}
+# A comment to describe the code
+paste("Hello world!")
+```
+
+Code chunks have various *parameters* which allow the user to control various aspects of the behavior of the code. Let's use one right now to get ourselves ready for the rest of the session. `echo=FALSE` turns off the default behavior of showing the code that runs. It will not, however, turn off the output (the `results='hide'` parameter and attribute will do that). 
+
+```{r load-libraries, echo=FALSE}
+library(stringr)
+```
+
+*Note: no code returned in the rendered document!*
+
+As you work with the other vignettes which cover other topics in R programming in this package, take a look at the source `.Rmd` files. Note the behavior of prose and code in this files to get a sense of how things work!
+
+### More information
+
+To get a basic overview of literate programming in R the [RStudio](https://rmarkdown.rstudio.com) website has documentation that covers the fundamentals of working with the RMarkdown format for various types of output (web documents, PDF documents, Word documents, *etc.*). For a more comprehensive resource consult [R Markdown: The Definitive Guide](https://bookdown.org/yihui/rmarkdown/). 
