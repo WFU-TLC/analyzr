@@ -35,7 +35,7 @@ library(stringr)
 
 *Note: no code returned in the rendered document!*
 
-As you work with the other vignettes which cover other topics in R programming in this package, take a look at the source `.Rmd` files. Note the behavior of prose and code in this files to get a sense of how things work!
+As you work with the other vignettes which cover other topics in R programming in this package, [take a look at the source `.Rmd` files](https://github.com/WFU-TLC/analyzr/tree/master/vignettes). Note the behavior of prose and code in this files to get a sense of how things work!
 
 ### More information
 
