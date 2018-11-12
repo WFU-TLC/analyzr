@@ -1,0 +1,82 @@
+---
+title: "Getting data in and out of R"
+author: "Jerid Francom"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting data in and out of R}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: "packages.bib"
+csl: /Users/francojc/Documents/Styles/apa-no-doi-no-issue.csl
+biblio-style: "apalike"
+link-citations: yes
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r include=FALSE}
+# automatically create a bib database for R packages
+knitr::write_bib(c(
+  .packages(), 'tidyverse', 'rio'
+), 'packages.bib')
+```
+
+# Importing data
+
+The format and the location of the data are the two primary issues to consider when working to import data into R. On the format side, there are various types of formats that data can be in but they break down into two main classes: proprietary (such as SPSS (`.sav`), STATA (`.dta`), Excel (`.xlsx`), etc.) and open formats (such as comma-separated values (`.csv`), XML (`.xml`), etc.). The location of the data can be on your local machine or accessible via URL, as long as you have an internet connection during the download processs R won't care where the data is located.
+
+There are a number of R packages that have been written and contributed by R community members for reading (and writing) various data formats. In this vignette I will introduce a sort of meta package that serves as a Swiss-army knife for data import and export: `rio` [@R-rio]. Under the hood, however, are a number of great packages that you can read more about on the [`rio` package vignette page](https://cran.r-project.org/web/packages/rio/vignettes/rio.html).
+
+Let's load the key packages we are going to use: 
+
+```{r libraries}
+library(tidyverse) # core packages 
+library(rio) # import/export 
+```
+
+
+Let's start by reading in some data from a URL with `rio::import()` and take a quick look at the data with `tibble::glimpse()`
+
+```{r }
+
+
+# import an example dataset from the web
+# http://users.wfu.edu/dewittme/data/sample/
+# General Social Survey Data
+# - data info: http://gss.norc.org/get-the-data
+gssd <- import(file = "http://users.wfu.edu/dewittme/data/sample/GSS2016.sav")
+glimpse(gssd)
+
+# Other data
+
+# Pew Public Opinion data:
+# http://users.wfu.edu/dewittme/data/sample/aug16_nr_public/Aug16_nr_public.sav
+# - data info: http://users.wfu.edu/dewittme/data/sample/aug16_nr_public/readme.txt 
+
+incidents <- import(file = "http://users.wfu.edu/dewittme/data/sample/geocoded_incidents_with_census_data.csv")
+
+# Sesame Street data
+# http://users.wfu.edu/dewittme/data/sample/sesame.dta
+# - data info: http://www2.stat.duke.edu/~jerry/sta103/labs/lab8a.html
+sesame <- import(file = "http://users.wfu.edu/dewittme/data/sample/sesame.dta")
+glimpse(sesame)
+
+
+```
+
+
+
+- Local file(s)
+- URL ()
+- API interface
+
+# Exporting data
+
+
+# References
