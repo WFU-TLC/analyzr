@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-### Hello world!
+## Hello world!
 
 **Literate programming** means you can include prose and code into the same document. In R, files with the extension `.Rmd` are R Markdown documents. R Markdown includes the power of Markdown to format text, include graphics, citations, *etc*. and the programming functionality of R (as well as other languages too).
 
@@ -37,6 +37,6 @@ library(stringr)
 
 As you work with the other vignettes which cover other topics in R programming in this package, [take a look at the source `.Rmd` files](https://github.com/WFU-TLC/analyzr/tree/master/vignettes). Note the behavior of prose and code in this files to get a sense of how things work!
 
-### More information
+## More information
 
 To get a basic overview of literate programming in R the [RStudio](https://rmarkdown.rstudio.com) website has documentation that covers the fundamentals of working with the RMarkdown format for various types of output (web documents, PDF documents, Word documents, *etc.*). For a more comprehensive resource consult [R Markdown: The Definitive Guide](https://bookdown.org/yihui/rmarkdown/). 

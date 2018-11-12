@@ -1,0 +1,173 @@
+---
+title: "Data: The Tidy and the Untidy"
+author: "Jerid Francom"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Data: The Tidy and the Untidy}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  out.width = '40%'
+)
+```
+
+## Goals
+
+In this vignette I will introduce the notion of 'tidy' data. I will provide an example dataset for both tidy format and 'untidy' format. The goal is to help you understand what it means for a dataset to be tidy, why this is a conducive format for data analysis, and some basic operations to convert untidy datasets into tidy datasets. 
+
+## Setup
+
+Let's attach the packages we will need for this vignette. If you do not have a package, use the RStudio interface, or the following command, to install it before continuing. 
+
+```{r install, eval=FALSE}
+install.packages("rio") # install rio package
+```
+
+
+```{r libraries}
+library(tidyverse) # core packages 
+library(rio) # import/export 
+library(datasets) # a package of toy datasets
+```
+
+## Tidy approach to data
+
+The data frame is the fundamental data structure for organizing data for analysis in R. A data frame in essence is just a collection of vectors of the same length. Each of these vectors will be of a single type (i.e. character, factor, integer, logical, *etc.*) corresponding to the type of information contained in each vector. 
+
+But when we conduct research the relationships between the vectors in the data.frame matter. Each row should correspond to an **observation** and each column an **attribute** of each observation. This is what is known as a 'tidy' dataset.
+
+## Tidy data
+
+Let's make use of some data that is made available by default in R. Specifically we'll take a look at the `msleep` dataset, a dataset containing the sleep times and weights of various mammals. Let's get a sense of what that data look like with `glimpse()`.
+
+```{r load-msleep}
+glimpse(msleep) # view the data
+```
+
+We see that there are 83 observations and 11 variables. Each variable corresponds to an attribute of the specific animal. We see that there are 5 categorical variables and 6 continuous variables. It is also apparent that there is some missing data, which is represented with `NA` or `<NA>` values depending on the variable type (categorical or continuous). It is not uncommon to have missing values in various cells of a dataset, for now it is just worth noting how they are represented in the data. 
+
+We can also see the data in a more standard tabular format by typing the name of the dataset in the Console.
+
+```{r view-msleep-console}
+msleep # tabular view of the data
+```
+
+Some of the variable names may not be altogether transparent, so let's take a look at the data dictionary with `?msleep`. After running this command in the Console you will get a help page with a description of the dataset. 
+
+
+```{r}
+?msleep # view the data dictionary in the Help pane
+```
+
+Since each row is an observation and each column an attribute of the data we have a tidy dataset. And at this point we could start an exploration of the data by creating table or plot summaries of the data. For example, we might be interested in finding out the how many types of `vore` there are and how many of each type there are.
+
+```{r msleep-count-vore}
+msleep %>% 
+  count(vore, sort = TRUE) %>% # count `vore` and sort ascending
+  head() # only show the top 5 rows
+```
+
+Herbivores are the most common and insectivores the least common. We can also do a cross-tabulation of `vore` and `order`. 
+
+```{r msleep-cross-vore-order}
+msleep %>% 
+  count(vore, order, sort = TRUE) %>% # count `vore` by `order` and sort
+  head() # top 5 rows
+```
+
+This table summary might start to get a little unwieldy, so a graphical approach may be in order. 
+
+```{r msleep-plot-vore-order}
+msleep %>% 
+  ggplot(aes(x = order, fill = vore)) + # map `order` to x, and `vore` as fill for the bars
+  geom_bar() + # visualize as a bar plot
+  coord_flip() # flip the x/y axes to better display `order` names
+```
+
+When working with relationships where we are working with one or more continuous variables, scatterplots are a good first choice for visualizing the data. Let's take a look at the relationship between `sleep_total` and `bodywt` and add the `vore` status as another attribute. 
+
+```{r msleep}
+msleep %>% 
+  ggplot(aes(x = brainwt, y = sleep_total, color = vore)) + # map x and y and add a color layer to the plot for `vore`
+  geom_point() # visualize as a scatterplot
+```
+
+## Untidy data
+
+```{r}
+# alternative untidy/ summary dataset: HairEyeColor
+```
+
+Now let's read some data from the Pew Research Center on religion and income. 
+
+```{r pew-data-read}
+pew <- import(file = "http://stat405.had.co.nz/data/pew.txt", setclass = "tbl_df")
+```
+
+Now let's take a look at the data. 
+
+```{r pew-untidy-view}
+glimpse(pew)
+```
+
+The dataset contains 18 observations and 11 variables. Let's preview the tabular output.
+
+```{r pew-table}
+pew
+```
+
+Considering our 'tidy' dataset definition, what is wrong with the following data frame?
+
+How should this data ideally be structured for tidy-style analysis?
+
+### Tidying data
+
+The basic problem here is that our data is a summary of religion and various levels of income. So in essence, we really only have two variables, `religion` and `income`. The `gather()` function will allow us to effectively group the income levels into one column (`income`). We exclude the `religion` column.
+
+```{r pew-gather}
+pew_tidy_sum <- 
+  pew %>% 
+  gather(income, count, -religion)
+pew_tidy_sum
+```
+
+The real number of observations is still not transparent as we still have counts for each of the combinations of `religion` and `income`. To find out how many observations where made we can sum the counts. We can see how many true observation there are by summing the `count` column.
+
+```{r pew-observation-count}
+sum(pew_tidy_sum$count)
+```
+
+We can unsummarize this data into individual observations with `uncount()`. 
+
+```{r pew-tidy-uncount}
+pew_tidy_ind <- uncount(pew_tidy_sum, count)
+pew_tidy_ind
+```
+
+We see that the dataset now has a row for each observation, as a tidy dataset should.
+
+We can now summarize the data in any way we see fit. 
+
+```{r pew-tidy-by-religion}
+pew_tidy_ind %>% 
+  count(religion, sort = TRUE)
+
+pew_tidy_ind %>% 
+  count(income, sort = TRUE)
+```
+
+Or we can visualize the relationships with plots. 
+
+```{r pew-plot-summary}
+pew_tidy_ind %>% 
+  ggplot(aes(x = religion, fill = income)) +
+  geom_bar() + 
+  coord_flip()
+```
+
