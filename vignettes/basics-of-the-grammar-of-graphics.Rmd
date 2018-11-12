@@ -1,0 +1,70 @@
+---
+title: "Basics of the Grammar of Graphics"
+author: "Jerid Francom"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Basics of the Grammar of Graphics}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# The Grammar of Graphics
+
+
+The Grammar of Graphics is built on three components -data, mappings, and geometries. The `ggplot2` package incorporates this approach explicitly in creating graphics.
+
+First we'll load the packages we will need first. 
+
+```{r libraries}
+library(tidyverse)
+```
+
+Let's take a built-in dataset, `diamonds`, and get an understanding what the data look like. 
+
+```{r dia-view}
+glimpse(diamonds)
+```
+
+We can also look at the data dictionary for this dataset using `?diamonds` in the Console. The least transparent of the variables are the `x`, `y`, and `z` which in the data dictionary clarify that they refer to the length, width, and depth in mm. 
+
+We also see that we have some categorical variables `cut` and `clarity` as well as some continuous variables `carat` and `price`, for example. 
+
+Knowing the informational value of our variables is key to creating an appropriate visualization. In the Grammar of Graphics we are going to take some data, in this case `diamonds`, then map some variables to a variable space with the `aes()` function, and then decide how to display these variables in a geometric space with the set of `geom_x` functions. 
+
+Let's see an example. First we can set up the data. 
+
+```{r data-setup}
+p <- ggplot(diamonds)
+p
+```
+
+At this point there is data, but no mappings nor geometries to be represented. Let's add a mapping of the `color` variable to the x-axis and plot that as a bar plot. 
+
+```{r dia-bar-color}
+p + geom_bar(aes(x = color))
+```
+
+Since this is a categorical variable, the y-axis is the count. We can augment this graphic by adding a `fill` aesthetic mapped to the `cut` variable. 
+
+```{r dia-bar-color-cut}
+p + geom_bar(aes(x = color, fill = cut))
+```
+
+We can also add a third categorical dimension to this plot with a facet. The `facet_wrap()` function can be added to the graphic represent a new plot for each level of the categorical variable. 
+
+```{r dia-bar-color-cut-clarity}
+p + geom_bar(aes(x = color, fill = cut)) + facet_wrap(~ clarity)
+```
+
+To be continued....
+
+- Box plots (cat x cont)
+- Scatterplots (cont x cont)
