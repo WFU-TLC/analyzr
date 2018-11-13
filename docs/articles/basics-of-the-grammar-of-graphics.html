@@ -88,7 +88,7 @@
       <h1>Basics of the Grammar of Graphics</h1>
                         <h4 class="author">Jerid Francom</h4>
             
-            <h4 class="date">2018-11-12</h4>
+            <h4 class="date">2018-11-13</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/WFU-TLC/analyzr/blob/master/vignettes/basics-of-the-grammar-of-graphics.Rmd"><code>vignettes/basics-of-the-grammar-of-graphics.Rmd</code></a></small>
       <div class="hidden name"><code>basics-of-the-grammar-of-graphics.Rmd</code></div>
@@ -103,12 +103,12 @@
 <p>The Grammar of Graphics is built on three components -data, mappings, and geometries. The <code>ggplot2</code> package incorporates this approach explicitly in creating graphics.</p>
 <p>First we’ll load the packages we will need first.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">library</span>(tidyverse)</a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="co">#&gt; ── Attaching packages ────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="co">#&gt; ── Attaching packages ───────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──</span></a>
 <a class="sourceLine" id="cb1-3" data-line-number="3"><span class="co">#&gt; ✔ ggplot2 3.1.0     ✔ purrr   0.2.5</span></a>
 <a class="sourceLine" id="cb1-4" data-line-number="4"><span class="co">#&gt; ✔ tibble  1.4.2     ✔ dplyr   0.7.7</span></a>
 <a class="sourceLine" id="cb1-5" data-line-number="5"><span class="co">#&gt; ✔ tidyr   0.8.2     ✔ stringr 1.3.1</span></a>
 <a class="sourceLine" id="cb1-6" data-line-number="6"><span class="co">#&gt; ✔ readr   1.1.1     ✔ forcats 0.3.0</span></a>
-<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="co">#&gt; ── Conflicts ───────────────────────────────────────────────────────────────── tidyverse_conflicts() ──</span></a>
+<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="co">#&gt; ── Conflicts ──────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──</span></a>
 <a class="sourceLine" id="cb1-8" data-line-number="8"><span class="co">#&gt; ✖ dplyr::filter() masks stats::filter()</span></a>
 <a class="sourceLine" id="cb1-9" data-line-number="9"><span class="co">#&gt; ✖ dplyr::lag()    masks stats::lag()</span></a></code></pre></div>
 <p>Let’s take a built-in dataset, <code>diamonds</code>, and get an understanding what the data look like.</p>
@@ -127,8 +127,7 @@
 <a class="sourceLine" id="cb2-13" data-line-number="13"><span class="co">#&gt; $ z       &lt;dbl&gt; 2.43, 2.31, 2.31, 2.63, 2.75, 2.48, 2.47, 2.53, 2.49, ...</span></a></code></pre></div>
 <p>We can also look at the data dictionary for this dataset using <code>?diamonds</code> in the Console. The least transparent of the variables are the <code>x</code>, <code>y</code>, and <code>z</code> which in the data dictionary clarify that they refer to the length, width, and depth in mm.</p>
 <p>We also see that we have some categorical variables <code>cut</code> and <code>clarity</code> as well as some continuous variables <code>carat</code> and <code>price</code>, for example.</p>
-<p>Knowing the informational value of our variables is key to creating an appropriate visualization. In the Grammar of Graphics we are going to take some data, in this case <code>diamonds</code>, then map some variables to a variable space with the <code>aes()</code> function, and then decide how to display these variables in a geometric space with the set of <code>geom_x</code> functions.</p>
-<p>Let’s see an example. First we can set up the data.</p>
+<p>Knowing the informational value of our variables is key to creating an appropriate visualization. In the Grammar of Graphics we are going to take some data, in this case <code>diamonds</code>, then map some variables to a variable space with the <code>aes()</code> function, and then decide how to display these variables in a geometric space with the set of <code>geom_x</code> functions. Let’s see an example. First we can set up the data.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">p &lt;-<span class="st"> </span><span class="kw">ggplot</span>(diamonds)</a>
 <a class="sourceLine" id="cb3-2" data-line-number="2">p</a></code></pre></div>
 <p><img src="basics-of-the-grammar-of-graphics_files/figure-html/data-setup-1.png" width="700"></p>
@@ -141,11 +140,37 @@
 <p>We can also add a third categorical dimension to this plot with a facet. The <code>facet_wrap()</code> function can be added to the graphic represent a new plot for each level of the categorical variable.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">p <span class="op">+</span><span class="st"> </span><span class="kw">geom_bar</span>(<span class="kw">aes</span>(<span class="dt">x =</span> color, <span class="dt">fill =</span> cut)) <span class="op">+</span><span class="st"> </span><span class="kw">facet_wrap</span>(<span class="op">~</span><span class="st"> </span>clarity)</a></code></pre></div>
 <p><img src="basics-of-the-grammar-of-graphics_files/figure-html/dia-bar-color-cut-clarity-1.png" width="700"></p>
-<p>To be continued….</p>
-<ul>
-<li>Box plots (cat x cont)</li>
-<li>Scatterplots (cont x cont)</li>
-</ul>
+<p>Now let’s look at the continuous variable <code>price</code>. A histogram is a good way to visualize a single continuous variable.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">p <span class="op">+</span><span class="st"> </span><span class="kw">geom_histogram</span>(<span class="kw">aes</span>(<span class="dt">x =</span> price))</a>
+<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="co">#&gt; `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</span></a></code></pre></div>
+<p><img src="basics-of-the-grammar-of-graphics_files/figure-html/dia-price-1.png" width="700"></p>
+<p>If we would like to see a combination of a categorical and continuous variable, a box plot is a often a good choice.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">p <span class="op">+</span><span class="st"> </span><span class="kw">geom_boxplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> color, <span class="dt">y =</span> price))</a></code></pre></div>
+<p><img src="basics-of-the-grammar-of-graphics_files/figure-html/dia-price-color-1.png" width="700"></p>
+<p>A box plot, as you see, displays boxes for each of the grouping values in ‘color’. The boxes contain a lot of distributional information. Namely, we get a visual display of much of the information we get when we run ‘summary()’ on a continuous variable. Min and max values are marked with the vertical line, the top and bottom of the box correspond to the 1st and 3rd quantile, and the bold line is the median. Dots on the vertical line are marked as outliers. It’s a pretty powerful visualization!</p>
+<p>We could also add a fill aesthetic to boxplots too, just as we did with bar plots earlier.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">p <span class="op">+</span><span class="st"> </span><span class="kw">geom_boxplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> color, <span class="dt">y =</span> price, <span class="dt">fill =</span> clarity))</a></code></pre></div>
+<p><img src="basics-of-the-grammar-of-graphics_files/figure-html/dia-price-color-clarity-1.png" width="700"></p>
+<p>And we can add another categorical variable through faceting.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">p <span class="op">+</span><span class="st"> </span><span class="kw">geom_boxplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> color, <span class="dt">y =</span> price, <span class="dt">fill =</span> clarity)) <span class="op">+</span><span class="st"> </span><span class="kw">facet_wrap</span>(<span class="op">~</span><span class="st"> </span>cut)</a></code></pre></div>
+<p><img src="basics-of-the-grammar-of-graphics_files/figure-html/dia-color-price-clarity-cut-1.png" width="700"></p>
+<p>Another type of common visualization situation is when we want to compare to continuous variables. This is where the scatterplot comes in. Let’s compare the <code>carat</code> and the <code>price</code>. The <code>geom_point()</code> function will map points to the x and y values.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1">p <span class="op">+</span><span class="st"> </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">x =</span> carat, <span class="dt">y =</span> price))</a></code></pre></div>
+<p><img src="basics-of-the-grammar-of-graphics_files/figure-html/dia-carat-price-1.png" width="700"></p>
+<p>We can also add a trend line by adding another layer with the <code>geom_smooth()</code> function. But to do this we need to pass the same mappings to both the <code>geom_point()</code> and <code>geom_smooth()</code> geometries. We can do this redundantly for each geometry, or we can take a different approach to adding the data and aesthetic mappings than we have so far. The alternative is seen below.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1">diamonds <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> carat, <span class="dt">y =</span> price)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_point</span>() <span class="op">+</span><span class="st"> </span><span class="kw">geom_smooth</span>()</a>
+<a class="sourceLine" id="cb12-2" data-line-number="2"><span class="co">#&gt; `geom_smooth()` using method = 'gam' and formula 'y ~ s(x, bs = "cs")'</span></a></code></pre></div>
+<p><img src="basics-of-the-grammar-of-graphics_files/figure-html/dia-carat-price-trend-1.png" width="700"></p>
+<p>To add a linear trendline, we can add a specific method to the <code>geom_smooth()</code> function.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1">diamonds <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> carat, <span class="dt">y =</span> price)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_point</span>() <span class="op">+</span><span class="st"> </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">"lm"</span>)</a></code></pre></div>
+<p><img src="basics-of-the-grammar-of-graphics_files/figure-html/dia-carat-price-lmtrend-1.png" width="700"></p>
+<p>As you might imagine, we can add a <code>color</code> aesthetic to indicate those points that are of certain <code>clarity</code>. <em>Note: after a <code>%&gt;%</code> or <code>+</code> you can add a line break if you find that it helps make your code more legible.</em></p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1">diamonds <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb14-2" data-line-number="2"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> carat, <span class="dt">y =</span> price, <span class="dt">color =</span> clarity)) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb14-3" data-line-number="3"><span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb14-4" data-line-number="4"><span class="st">  </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">"lm"</span>)</a></code></pre></div>
+<p><img src="basics-of-the-grammar-of-graphics_files/figure-html/dia-carat-price-clarity-trend-1.png" width="700"></p>
+<p>That’s a quick rundown of the basics of the Grammar of Graphics and the <code>ggplot2</code> package. There is so much more <code>ggplot2</code> can do and surely more that you want to know how to do. A good place to start is the <a href="https://ggplot2.tidyverse.org">Ggplot2 package website</a>. I also recommend the <a href="http://a.co/d/4Ykzomf">“R Graphics Cookbook” by Winston Chang</a>.</p>
 </div>
   </div>
 

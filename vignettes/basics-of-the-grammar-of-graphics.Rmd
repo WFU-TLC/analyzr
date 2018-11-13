@@ -38,7 +38,6 @@ We can also look at the data dictionary for this dataset using `?diamonds` in th
 We also see that we have some categorical variables `cut` and `clarity` as well as some continuous variables `carat` and `price`, for example. 
 
 Knowing the informational value of our variables is key to creating an appropriate visualization. In the Grammar of Graphics we are going to take some data, in this case `diamonds`, then map some variables to a variable space with the `aes()` function, and then decide how to display these variables in a geometric space with the set of `geom_x` functions. 
-
 Let's see an example. First we can set up the data. 
 
 ```{r data-setup}
@@ -64,7 +63,58 @@ We can also add a third categorical dimension to this plot with a facet. The `fa
 p + geom_bar(aes(x = color, fill = cut)) + facet_wrap(~ clarity)
 ```
 
-To be continued....
+Now let's look at the continuous variable `price`. A histogram is a good way to visualize a single continuous variable. 
 
-- Box plots (cat x cont)
-- Scatterplots (cont x cont)
+```{r dia-price}
+p + geom_histogram(aes(x = price))
+```
+
+If we would like to see a combination of a categorical and continuous variable, a box plot is a often a good choice. 
+
+```{r dia-price-color}
+p + geom_boxplot(aes(x = color, y = price))
+```
+
+A box plot, as you see, displays boxes for each of the grouping values in 'color'. The boxes contain a lot of distributional information. Namely, we get a visual display of much of the information we get when we run 'summary()' on a continuous variable. Min and max values are marked with the vertical line, the top and bottom of the box correspond to the 1st and 3rd quantile, and the bold line is the median. Dots on the vertical line are marked as outliers. It's a pretty powerful visualization!
+
+We could also add a fill aesthetic to boxplots too, just as we did with bar plots earlier. 
+
+```{r dia-price-color-clarity}
+p + geom_boxplot(aes(x = color, y = price, fill = clarity))
+```
+
+And we can add another categorical variable through faceting. 
+
+```{r dia-color-price-clarity-cut}
+p + geom_boxplot(aes(x = color, y = price, fill = clarity)) + facet_wrap(~ cut)
+```
+
+Another type of common visualization situation is when we want to compare to continuous variables. This is where the scatterplot comes in. Let's compare the `carat` and the `price`. The `geom_point()` function will map points to the x and y values. 
+
+```{r dia-carat-price}
+p + geom_point(aes(x = carat, y = price))
+```
+
+We can also add a trend line by adding another layer with the `geom_smooth()` function. But to do this we need to pass the same mappings to both the `geom_point()` and `geom_smooth()` geometries. We can do this redundantly for each geometry, or we can take a different approach to adding the data and aesthetic mappings than we have so far. The alternative is seen below. 
+
+```{r dia-carat-price-trend}
+diamonds %>% ggplot(aes(x = carat, y = price)) + geom_point() + geom_smooth()
+```
+
+To add a linear trendline, we can add a specific method to the `geom_smooth()` function. 
+
+```{r dia-carat-price-lmtrend}
+diamonds %>% ggplot(aes(x = carat, y = price)) + geom_point() + geom_smooth(method = "lm")
+```
+
+
+As you might imagine, we can add a `color` aesthetic to indicate those points that are of certain `clarity`. *Note: after a `%>%` or `+` you can add a line break if you find that it helps make your code more legible.*
+
+```{r dia-carat-price-clarity-trend}
+diamonds %>% 
+  ggplot(aes(x = carat, y = price, color = clarity)) + 
+  geom_point() + 
+  geom_smooth(method = "lm")
+```
+
+That's a quick rundown of the basics of the Grammar of Graphics and the `ggplot2` package. There is so much more `ggplot2` can do and surely more that you want to know how to do. A good  place to start is the [Ggplot2 package website](https://ggplot2.tidyverse.org). I also recommend the ["R Graphics Cookbook" by Winston Chang](http://a.co/d/4Ykzomf). 
