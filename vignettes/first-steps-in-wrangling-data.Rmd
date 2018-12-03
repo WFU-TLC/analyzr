@@ -1,0 +1,168 @@
+---
+title: "First Steps in Wrangling Data"
+author: "Jerid Francom"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{First Steps in Wrangling Data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+<!-- NOTES:
+
+- make sure to review what the participants will be reading for this week.
+- check for good examples that already exist
+- consider an example that I have some experience with, say a language case. 
+
+-->
+
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Goals
+
+In this vignette I will provide an overview of some of the more common strategies that you will use to manipulate and organize your data for subsequente analysis. We will be working with two packages that are part of the tidyverse package. The first, `tidyr`, provides a number of functions for reorganizing variables between long and wide format as well as separating out new variables based on the values of other variable. The second, `dplyr`, is used for manipulating data, that is, to select, filter, sort, *etc.* and for transforming values either through recoding or some other operation. 
+
+## Data
+
+<!-- NOTES:
+
+LDC release: https://catalog.ldc.upenn.edu/LDC97S62
+
+LDC docs: https://catalog.ldc.upenn.edu/docs/LDC97S62/
+  - Metadata: https://catalog.ldc.upenn.edu/docs/LDC97S62/caller_tab.csv 
+
+-->
+
+Let's take at a dataset included in the `analyzr` package. First, install and load the package, and the main tidyverse tools. 
+
+```{r install-analyzr, eval=FALSE}
+devtools::install_github("WFU-TLC/analyzr")
+```
+
+```{r libraries}
+library(tidyverse)
+library(analyzr)
+```
+
+Let's take a look at the `sdac` dataset. 
+
+```{r view-sdac}
+glimpse(sdac)
+```
+
+This dataset is in the tidy format. Take a look at the R documentation for this dataset with `?sdac`. 
+
+
+## Manipulate data frames
+
+There are a few tidyverse verbs that are very commonly used to manipulate data frames. 
+
+**select()** allows you to select a subset of columns
+
+```{r select-sdac}
+sdac %>% 
+  select(speaker_id, damsl_tag, birth_year, utterance_text) %>% 
+  head()
+```
+
+
+**arrange()** sorts a data frame by one or more columns
+
+```{r arrange-sdac}
+sdac %>% 
+  select(speaker_id, damsl_tag, birth_year, utterance_text) %>%
+  arrange(birth_year) %>% 
+  head()
+```
+
+**filter()** allows you to select rows where the values match certain parameters
+
+```{r sdac-filter}
+sdac %>% 
+  select(speaker_id, damsl_tag, birth_year, utterance_text) %>%
+  arrange(birth_year) %>% 
+  filter(birth_year == 1971) %>% 
+  head()
+```
+
+`filter()` can be combined with numerous operators and vector functions. 
+
+```{r sdac-filter-between}
+sdac %>% 
+  select(speaker_id, damsl_tag, birth_year, utterance_text) %>%
+  arrange(birth_year) %>% 
+  filter(between(birth_year, 1950, 1969)) %>% 
+  head()
+```
+
+```{r sdac-filter-gt}
+sdac %>% 
+  select(speaker_id, damsl_tag, birth_year, utterance_text) %>%
+  arrange(birth_year) %>% 
+  filter(birth_year > 1955) %>% 
+  head()
+```
+
+## Summarize data
+
+You often want to explore your data by summarizing. A basic summary is `count()`. 
+
+```{r sdac-count}
+sdac %>% 
+  count()
+```
+
+You can also add column names to `count()` to group your count summary. 
+
+```{r sdac-count-birth-year}
+sdac %>% 
+  count(birth_year, sort = TRUE)
+```
+
+You can also use the `group_by()` function to expliciy group your data for multiple operations. 
+
+```{r sdac-group-by-count}
+sdac %>% 
+  group_by(birth_year) %>% 
+  count()
+```
+
+Using `group_by()` we can sample data as well.
+
+```{r sdac-group-by-sample}
+sdac %>% 
+  group_by(birth_year) %>% 
+  sample_n(2) %>% 
+  select(speaker_id, birth_year, utterance_text) %>% 
+  arrange(birth_year) %>% 
+  head()
+```
+
+- mutate
+- summarize
+
+- Vector functions
+  - n
+  - row_number
+  - case_when
+
+## Organize data frames
+
+```{r main-verbs-image, echo=FALSE, fig.cap='Found at [STHDA website](http://www.sthda.com/english/wiki/tidyr-crucial-step-reshaping-data-with-r-for-easier-analyses)'}
+knitr::include_graphics(path = "http://www.sthda.com/sthda/RDoc/images/tidyr.png")
+```
+
+- gather/ spread
+- separate/ unite
+
+
+- Two table verbs
+
+
