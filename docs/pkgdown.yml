@@ -1,9 +1,10 @@
-pandoc: 2.3.1
-pkgdown: 1.1.0
+pandoc: '2.4'
+pkgdown: 1.2.0
 pkgdown_sha: ~
 articles:
   basics-of-the-grammar-of-graphics: basics-of-the-grammar-of-graphics.html
   data-the-tidy-and-the-untidy: data-the-tidy-and-the-untidy.html
+  first-steps-in-wrangling-data: first-steps-in-wrangling-data.html
   getting-data-in-and-out-of-r: getting-data-in-and-out-of-r.html
   short_note_on_literate_programming: short_note_on_literate_programming.html
 
