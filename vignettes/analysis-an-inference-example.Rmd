@@ -1,0 +1,50 @@
+---
+title: "Analysis: an inference example"
+author: "Jerid Francom"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Analysis: an inference example}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: bibliography.bib
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Speech corpora and sociolinguistics
+
+In @Tottie2011 the spoken components of the British National Corpus were used to investigate the potential sociolinguistics of the usage of the fillers 'uh' and 'um'. It was found that men use more fillers than women and speakers in managerial or higher positions also use more fillers. The results for age are less telling with one clear result being that the oldest cohort used more fillers. Turning to each of the fillers, men used more 'uh' than 'um' and women the opposite. It was also found that when looking at these variants age appeared to predict usage; younger speakers used more 'um' and older speakers more 'uh'. Finally, one somewhat counterintuitive result is that speakers of higher socio-economic status used 'um' more than there lower status counterparts.
+
+The authors focus on British English exclusively and compare both conversational and 'context-governed' spoken language. In this case study, we will look at an American English corpus: [Santa Barbara Corpus of Spoken American English](http://www.linguistics.ucsb.edu/research/santa-barbara-corpus). This corpus is conversational and fortunately includes a rich set of meta data including ages, occupations, genders, years of education, etc.
+
+Using this corpus we will explore the main components of the @Tottie2011 article. That is, to explore the influence of gender, age, and socioeconomic status on the usage of fillers, in general, and then the types of fillers, either 'uh' or 'um'. 
+
+# Data
+
+Let's access a curated version of this data through the `analyzr` package. First, install and load the package, and the main tidyverse tools. 
+
+```{r install-analyzr, eval=FALSE}
+devtools::install_github("WFU-TLC/analyzr")
+```
+
+```{r libraries}
+library(tidyverse)
+library(analyzr)
+```
+
+Let's take a look at the `sbc` dataset. 
+
+```{r data-first-look}
+glimpse(sbc)
+```
+
+
+
+# References
+

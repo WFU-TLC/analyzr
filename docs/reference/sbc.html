@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Pipe operator — %&gt;% • analyzr</title>
+<title>Santa Barbara Corpus of Spoken American English — sbc • analyzr</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +30,10 @@
 
 
 
-<meta property="og:title" content="Pipe operator — %&gt;%" />
+<meta property="og:title" content="Santa Barbara Corpus of Spoken American English — sbc" />
 
-<meta property="og:description" content="See magrittr::%&amp;gt;% for details." />
+<meta property="og:description" content="A dataset containing the 15,475 utterances by 44 speakers of American
+English." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -126,25 +127,52 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Pipe operator</h1>
-    <small class="dont-index">Source: <a href='https://github.com/WFU-TLC/analyzr/blob/master/R/utils-pipe.R'><code>R/utils-pipe.R</code></a></small>
-    <div class="hidden name"><code>pipe.Rd</code></div>
+    <h1>Santa Barbara Corpus of Spoken American English</h1>
+    <small class="dont-index">Source: <a href='https://github.com/WFU-TLC/analyzr/blob/master/R/sbc.R'><code>R/sbc.R</code></a></small>
+    <div class="hidden name"><code>sbc.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>See <code>magrittr::%&gt;%</code> for details.</p>
+    <p>A dataset containing the 15,475 utterances by 44 speakers of American
+English.</p>
     
     </div>
 
-    <pre class="usage"><span class='no'>lhs</span> <span class='kw'>%&gt;%</span> <span class='no'>rhs</span></pre>
+    <pre class="usage"><span class='no'>sbc</span></pre>
         
+    <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
+
+    <p>A data frame with 15,475 rows and 13 variables:</p><dl class='dl-horizontal'>
+  <dt>id</dt><dd><p>ID for each speaker</p></dd>
+  <dt>name</dt><dd><p>Name of each speaker</p></dd>
+  <dt>gender</dt><dd><p>Gender of the speaker</p></dd>
+  <dt>age</dt><dd><p>Age of the speaker at recording</p></dd>
+  <dt>dialect</dt><dd><p>Dialect self-assessment for each speaker</p></dd>
+  <dt>dialect_state</dt><dd><p>State where each speaker was raised</p></dd>
+  <dt>current_state</dt><dd><p>State of residence for each speaker at recording</p></dd>
+  <dt>highest_edu</dt><dd><p>Highest educational degree obtained</p></dd>
+  <dt>years_edu</dt><dd><p>Number of years in the educational setting</p></dd>
+  <dt>occupation</dt><dd><p>Occupation of the speaker at recording</p></dd>
+  <dt>ethnicity</dt><dd><p>Ethnicity self-assessment for each speaker</p></dd>
+  <dt>utterance</dt><dd><p>Annotated transcription of a speaker's utterance</p></dd>
+  <dt>utterrance_clean</dt><dd><p>Simplified transcription of a speaker's utterance</p></dd>
+</dl>
+    
+    <h2 class="hasAnchor" id="source"><a class="anchor" href="#source"></a>Source</h2>
+
+    <p><a href='http://www.linguistics.ucsb.edu/research/santa-barbara-corpus'>http://www.linguistics.ucsb.edu/research/santa-barbara-corpus</a></p>
+    
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-                </ul>
+      
+      <li><a href="#format">Format</a></li>
+
+      <li><a href="#source">Source</a></li>
+          </ul>
 
   </div>
 </div>

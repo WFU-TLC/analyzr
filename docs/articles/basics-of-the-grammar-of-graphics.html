@@ -53,6 +53,9 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
+      <a href="../articles/analysis-an-inference-example.html">Analysis: an inference example</a>
+    </li>
+    <li>
       <a href="../articles/basics-of-the-grammar-of-graphics.html">Basics of the Grammar of Graphics</a>
     </li>
     <li>
@@ -92,7 +95,7 @@
       <h1>Basics of the Grammar of Graphics</h1>
                         <h4 class="author">Jerid Francom</h4>
             
-            <h4 class="date">2018-12-03</h4>
+            <h4 class="date">2019-02-22</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/WFU-TLC/analyzr/blob/master/vignettes/basics-of-the-grammar-of-graphics.Rmd"><code>vignettes/basics-of-the-grammar-of-graphics.Rmd</code></a></small>
       <div class="hidden name"><code>basics-of-the-grammar-of-graphics.Rmd</code></div>
@@ -107,28 +110,30 @@
 <p>The Grammar of Graphics is built on three components -data, mappings, and geometries. The <code>ggplot2</code> package incorporates this approach explicitly in creating graphics.</p>
 <p>First we’ll load the packages we will need first.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(tidyverse)</a>
-<a class="sourceLine" id="cb1-2" title="2"><span class="co">#&gt; ── Attaching packages ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──</span></a>
-<a class="sourceLine" id="cb1-3" title="3"><span class="co">#&gt; ✔ ggplot2 3.1.0     ✔ purrr   0.2.5</span></a>
-<a class="sourceLine" id="cb1-4" title="4"><span class="co">#&gt; ✔ tibble  1.4.2     ✔ dplyr   0.7.8</span></a>
+<a class="sourceLine" id="cb1-2" title="2"><span class="co">#&gt; ── Attaching packages ───────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──</span></a>
+<a class="sourceLine" id="cb1-3" title="3"><span class="co">#&gt; ✔ ggplot2 3.1.0     ✔ purrr   0.3.0</span></a>
+<a class="sourceLine" id="cb1-4" title="4"><span class="co">#&gt; ✔ tibble  2.0.1     ✔ dplyr   0.7.8</span></a>
 <a class="sourceLine" id="cb1-5" title="5"><span class="co">#&gt; ✔ tidyr   0.8.2     ✔ stringr 1.3.1</span></a>
-<a class="sourceLine" id="cb1-6" title="6"><span class="co">#&gt; ✔ readr   1.2.1     ✔ forcats 0.3.0</span></a>
-<a class="sourceLine" id="cb1-7" title="7"><span class="co">#&gt; ── Conflicts ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──</span></a>
-<a class="sourceLine" id="cb1-8" title="8"><span class="co">#&gt; ✖ dplyr::filter() masks stats::filter()</span></a>
-<a class="sourceLine" id="cb1-9" title="9"><span class="co">#&gt; ✖ dplyr::lag()    masks stats::lag()</span></a></code></pre></div>
+<a class="sourceLine" id="cb1-6" title="6"><span class="co">#&gt; ✔ readr   1.3.1     ✔ forcats 0.3.0</span></a>
+<a class="sourceLine" id="cb1-7" title="7"><span class="co">#&gt; Warning: package 'tibble' was built under R version 3.5.2</span></a>
+<a class="sourceLine" id="cb1-8" title="8"><span class="co">#&gt; Warning: package 'purrr' was built under R version 3.5.2</span></a>
+<a class="sourceLine" id="cb1-9" title="9"><span class="co">#&gt; ── Conflicts ──────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──</span></a>
+<a class="sourceLine" id="cb1-10" title="10"><span class="co">#&gt; ✖ dplyr::filter() masks stats::filter()</span></a>
+<a class="sourceLine" id="cb1-11" title="11"><span class="co">#&gt; ✖ dplyr::lag()    masks stats::lag()</span></a></code></pre></div>
 <p>Let’s take a built-in dataset, <code>diamonds</code>, and get an understanding what the data look like.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">glimpse</span>(diamonds)</a>
 <a class="sourceLine" id="cb2-2" title="2"><span class="co">#&gt; Observations: 53,940</span></a>
 <a class="sourceLine" id="cb2-3" title="3"><span class="co">#&gt; Variables: 10</span></a>
-<a class="sourceLine" id="cb2-4" title="4"><span class="co">#&gt; $ carat   &lt;dbl&gt; 0.23, 0.21, 0.23, 0.29, 0.31, 0.24, 0.24, 0.26, 0.22, ...</span></a>
-<a class="sourceLine" id="cb2-5" title="5"><span class="co">#&gt; $ cut     &lt;ord&gt; Ideal, Premium, Good, Premium, Good, Very Good, Very G...</span></a>
-<a class="sourceLine" id="cb2-6" title="6"><span class="co">#&gt; $ color   &lt;ord&gt; E, E, E, I, J, J, I, H, E, H, J, J, F, J, E, E, I, J, ...</span></a>
-<a class="sourceLine" id="cb2-7" title="7"><span class="co">#&gt; $ clarity &lt;ord&gt; SI2, SI1, VS1, VS2, SI2, VVS2, VVS1, SI1, VS2, VS1, SI...</span></a>
-<a class="sourceLine" id="cb2-8" title="8"><span class="co">#&gt; $ depth   &lt;dbl&gt; 61.5, 59.8, 56.9, 62.4, 63.3, 62.8, 62.3, 61.9, 65.1, ...</span></a>
-<a class="sourceLine" id="cb2-9" title="9"><span class="co">#&gt; $ table   &lt;dbl&gt; 55, 61, 65, 58, 58, 57, 57, 55, 61, 61, 55, 56, 61, 54...</span></a>
-<a class="sourceLine" id="cb2-10" title="10"><span class="co">#&gt; $ price   &lt;int&gt; 326, 326, 327, 334, 335, 336, 336, 337, 337, 338, 339,...</span></a>
-<a class="sourceLine" id="cb2-11" title="11"><span class="co">#&gt; $ x       &lt;dbl&gt; 3.95, 3.89, 4.05, 4.20, 4.34, 3.94, 3.95, 4.07, 3.87, ...</span></a>
-<a class="sourceLine" id="cb2-12" title="12"><span class="co">#&gt; $ y       &lt;dbl&gt; 3.98, 3.84, 4.07, 4.23, 4.35, 3.96, 3.98, 4.11, 3.78, ...</span></a>
-<a class="sourceLine" id="cb2-13" title="13"><span class="co">#&gt; $ z       &lt;dbl&gt; 2.43, 2.31, 2.31, 2.63, 2.75, 2.48, 2.47, 2.53, 2.49, ...</span></a></code></pre></div>
+<a class="sourceLine" id="cb2-4" title="4"><span class="co">#&gt; $ carat   &lt;dbl&gt; 0.23, 0.21, 0.23, 0.29, 0.31, 0.24, 0.24, 0.26, 0.22, 0.…</span></a>
+<a class="sourceLine" id="cb2-5" title="5"><span class="co">#&gt; $ cut     &lt;ord&gt; Ideal, Premium, Good, Premium, Good, Very Good, Very Goo…</span></a>
+<a class="sourceLine" id="cb2-6" title="6"><span class="co">#&gt; $ color   &lt;ord&gt; E, E, E, I, J, J, I, H, E, H, J, J, F, J, E, E, I, J, J,…</span></a>
+<a class="sourceLine" id="cb2-7" title="7"><span class="co">#&gt; $ clarity &lt;ord&gt; SI2, SI1, VS1, VS2, SI2, VVS2, VVS1, SI1, VS2, VS1, SI1,…</span></a>
+<a class="sourceLine" id="cb2-8" title="8"><span class="co">#&gt; $ depth   &lt;dbl&gt; 61.5, 59.8, 56.9, 62.4, 63.3, 62.8, 62.3, 61.9, 65.1, 59…</span></a>
+<a class="sourceLine" id="cb2-9" title="9"><span class="co">#&gt; $ table   &lt;dbl&gt; 55, 61, 65, 58, 58, 57, 57, 55, 61, 61, 55, 56, 61, 54, …</span></a>
+<a class="sourceLine" id="cb2-10" title="10"><span class="co">#&gt; $ price   &lt;int&gt; 326, 326, 327, 334, 335, 336, 336, 337, 337, 338, 339, 3…</span></a>
+<a class="sourceLine" id="cb2-11" title="11"><span class="co">#&gt; $ x       &lt;dbl&gt; 3.95, 3.89, 4.05, 4.20, 4.34, 3.94, 3.95, 4.07, 3.87, 4.…</span></a>
+<a class="sourceLine" id="cb2-12" title="12"><span class="co">#&gt; $ y       &lt;dbl&gt; 3.98, 3.84, 4.07, 4.23, 4.35, 3.96, 3.98, 4.11, 3.78, 4.…</span></a>
+<a class="sourceLine" id="cb2-13" title="13"><span class="co">#&gt; $ z       &lt;dbl&gt; 2.43, 2.31, 2.31, 2.63, 2.75, 2.48, 2.47, 2.53, 2.49, 2.…</span></a></code></pre></div>
 <p>We can also look at the data dictionary for this dataset using <code>?diamonds</code> in the Console. The least transparent of the variables are the <code>x</code>, <code>y</code>, and <code>z</code> which in the data dictionary clarify that they refer to the length, width, and depth in mm.</p>
 <p>We also see that we have some categorical variables <code>cut</code> and <code>clarity</code> as well as some continuous variables <code>carat</code> and <code>price</code>, for example.</p>
 <p>Knowing the informational value of our variables is key to creating an appropriate visualization. In the Grammar of Graphics we are going to take some data, in this case <code>diamonds</code>, then map some variables to a variable space with the <code>aes()</code> function, and then decide how to display these variables in a geometric space with the set of <code>geom_x</code> functions. Let’s see an example. First we can set up the data.</p>
@@ -196,7 +201,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
 </div>
       </footer>
 </div>
