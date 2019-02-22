@@ -24,7 +24,7 @@ prepared for linguistic research on modern English. It contains of over
 English prose printed in the United States during the calendar year 1961.
 }
 \details{
-This dataset has 500 rows corresponding to the 500 samples and 4 variables.
+This dataset has 1,004,082 rows corresponding to the tokenized words and 4 variables.
 For more information: \code{\link{http://www.helsinki.fi/varieng/CoRD/corpora/BROWN/}}
 }
 \keyword{datasets}
