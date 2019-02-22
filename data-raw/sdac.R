@@ -1,8 +1,7 @@
-# Description:
+# Description: Switchboard Dialogue Act Corpus
 # Usage:
 # Author: Jerid Francom
 # Date: 2018-12-03
-
 
 # SETUP -------------------------------------------------------------------
 
