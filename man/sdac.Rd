@@ -31,7 +31,7 @@
 sdac
 }
 \description{
-A dataset containing the 1,1150 conversations of 440 speakers of American
-English.
+A dataset containing the 1,150 conversations of 440 speakers of American
+English. More information on the metadata in this data can be found here \code{\link{https://catalog.ldc.upenn.edu/docs/LDC97S62/swb1_manual.txt}}.
 }
 \keyword{datasets}
