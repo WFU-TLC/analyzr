@@ -104,6 +104,11 @@
 
     
     
+<!-- NOTES: 
+
+- To build the pkgdown site only updating documentation and vignettes that have changed use `pkgdown::build_site(lazy = TRUE)`
+
+-->
 <div id="speech-corpora-and-sociolinguistics" class="section level1">
 <h1 class="hasAnchor">
 <a href="#speech-corpora-and-sociolinguistics" class="anchor"></a>Speech corpora and sociolinguistics</h1>
@@ -145,6 +150,407 @@
 <a class="sourceLine" id="cb3-14" title="14"><span class="co">#&gt; $ ethnicity       &lt;chr&gt; "white", "white", "white", "white", "white", "wh…</span></a>
 <a class="sourceLine" id="cb3-15" title="15"><span class="co">#&gt; $ utterance       &lt;chr&gt; "... So you don't need to go ... borrow equipmen…</span></a>
 <a class="sourceLine" id="cb3-16" title="16"><span class="co">#&gt; $ utterance_clean &lt;chr&gt; "so you don't need to go borrow equipment from a…</span></a></code></pre></div>
+<p>To find out more about the data we can look at the data dictionary provided in the <code>analyzr</code> package with <code><a href="../reference/sbc.html">?sbc</a></code>.</p>
+</div>
+<div id="case-study" class="section level1">
+<h1 class="hasAnchor">
+<a href="#case-study" class="anchor"></a>Case Study</h1>
+<p>First we will prepare the data by isolating the independent variables of intereest and extracting our dependent variables ‘uh’ and ‘um’, add them to the <code>sbc</code> data.frame and transform the data.frame to a format more suitable to the visualizations and significance tests that we will be conducting. Second, we will step through ‘gender’, ‘age’, and ‘socioeconomic class’ and visualize and submit the contrasts to the relevant statistical tests.</p>
+<div id="prepare-the-variables" class="section level2">
+<h2 class="hasAnchor">
+<a href="#prepare-the-variables" class="anchor"></a>Prepare the variables</h2>
+<div id="isolate-independent-variables" class="section level3">
+<h3 class="hasAnchor">
+<a href="#isolate-independent-variables" class="anchor"></a>Isolate independent variables</h3>
+<p>Before we continue, let’s decide on the column variables we are going to use as proxies for ‘gender’, ‘age’ and ‘socioeconomic class’. The first two are easy and straight forward. Socioeconomic class is much more tricky, not just for us, but in general. From my knowledge of the sociolinguistic literature and to keep operationalization of this variable simple, I will use <code>years_edu</code> as our ‘socioeconomic class’ proxy.</p>
+<p>As promised, we will now get rid of the data that does not have complete data for these three variables. First we select only those variables/ columns in <code>sbc</code> of interest with <code>select()</code>. Then we use <code><a href="https://www.rdocumentation.org/packages/stats/topics/complete.cases">complete.cases()</a></code> to find rows that have data for all of these variables afterwhich we slice the <code>sbc</code> data.frame to include only these complete cases.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1">sbc &lt;-<span class="st"> </span>sbc <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">select</span>(id, name, gender, age, years_edu, utterance_clean)</a>
+<a class="sourceLine" id="cb4-2" title="2">sbc &lt;-<span class="st"> </span>sbc[<span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/complete.cases">complete.cases</a></span>(sbc), ]</a></code></pre></div>
+</div>
+<div id="extract-dependent-variable" class="section level3">
+<h3 class="hasAnchor">
+<a href="#extract-dependent-variable" class="anchor"></a>Extract dependent variable</h3>
+<p>Now we need to count the occurrences of ‘uh/um’ for each utterance. We will add a column with the counts for each filler type using <code>str_count()</code> and then we will change this ‘wide’ format to ‘long’ format with <code>gather()</code>. That is, we want the fillers to be under one column and the number of each filler to be in a separate column.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1">sbc &lt;-<span class="st"> </span></a>
+<a class="sourceLine" id="cb5-2" title="2"><span class="st">  </span>sbc <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb5-3" title="3"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">um =</span> <span class="kw">str_count</span>(utterance_clean, <span class="st">"</span><span class="ch">\\</span><span class="st">b(um|u=m)</span><span class="ch">\\</span><span class="st">b"</span>)) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb5-4" title="4"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">uh =</span> <span class="kw">str_count</span>(utterance_clean, <span class="st">"</span><span class="ch">\\</span><span class="st">b(uh|u=h)</span><span class="ch">\\</span><span class="st">b"</span>))</a>
+<a class="sourceLine" id="cb5-5" title="5"></a>
+<a class="sourceLine" id="cb5-6" title="6">sbc </a>
+<a class="sourceLine" id="cb5-7" title="7"><span class="co">#&gt; # A tibble: 11,331 x 8</span></a>
+<a class="sourceLine" id="cb5-8" title="8"><span class="co">#&gt;       id name   gender   age years_edu utterance_clean             um    uh</span></a>
+<a class="sourceLine" id="cb5-9" title="9"><span class="co">#&gt;    &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;                    &lt;int&gt; &lt;int&gt;</span></a>
+<a class="sourceLine" id="cb5-10" title="10"><span class="co">#&gt;  1     1 lenore female    30        16 so you don't need to go…     0     0</span></a>
+<a class="sourceLine" id="cb5-11" title="11"><span class="co">#&gt;  2     1 lenore female    30        16 to                           0     0</span></a>
+<a class="sourceLine" id="cb5-12" title="12"><span class="co">#&gt;  3     1 lenore female    30        16 to do the feet               0     0</span></a>
+<a class="sourceLine" id="cb5-13" title="13"><span class="co">#&gt;  4     1 lenore female    30        16 do the hooves                0     0</span></a>
+<a class="sourceLine" id="cb5-14" title="14"><span class="co">#&gt;  5     1 lenore female    30        16 did they train you           0     0</span></a>
+<a class="sourceLine" id="cb5-15" title="15"><span class="co">#&gt;  6     1 lenore female    30        16 did they train you that      0     0</span></a>
+<a class="sourceLine" id="cb5-16" title="16"><span class="co">#&gt;  7     1 lenore female    30        16 so you have your own eq…     0     0</span></a>
+<a class="sourceLine" id="cb5-17" title="17"><span class="co">#&gt;  8     1 lenore female    30        16 but                          0     0</span></a>
+<a class="sourceLine" id="cb5-18" title="18"><span class="co">#&gt;  9     1 lenore female    30        16 yeah                         0     0</span></a>
+<a class="sourceLine" id="cb5-19" title="19"><span class="co">#&gt; 10     1 lenore female    30        16 i bet                        0     0</span></a>
+<a class="sourceLine" id="cb5-20" title="20"><span class="co">#&gt; # … with 11,321 more rows</span></a>
+<a class="sourceLine" id="cb5-21" title="21"></a>
+<a class="sourceLine" id="cb5-22" title="22">sbc &lt;-<span class="st"> </span></a>
+<a class="sourceLine" id="cb5-23" title="23"><span class="st">  </span>sbc <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb5-24" title="24"><span class="st">  </span><span class="kw">gather</span>(filler_type, filler_count, um<span class="op">:</span>uh)</a>
+<a class="sourceLine" id="cb5-25" title="25"></a>
+<a class="sourceLine" id="cb5-26" title="26">sbc</a>
+<a class="sourceLine" id="cb5-27" title="27"><span class="co">#&gt; # A tibble: 22,662 x 8</span></a>
+<a class="sourceLine" id="cb5-28" title="28"><span class="co">#&gt;       id name  gender   age years_edu utterance_clean filler_type</span></a>
+<a class="sourceLine" id="cb5-29" title="29"><span class="co">#&gt;    &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;           &lt;chr&gt;      </span></a>
+<a class="sourceLine" id="cb5-30" title="30"><span class="co">#&gt;  1     1 leno… female    30        16 so you don't n… um         </span></a>
+<a class="sourceLine" id="cb5-31" title="31"><span class="co">#&gt;  2     1 leno… female    30        16 to              um         </span></a>
+<a class="sourceLine" id="cb5-32" title="32"><span class="co">#&gt;  3     1 leno… female    30        16 to do the feet  um         </span></a>
+<a class="sourceLine" id="cb5-33" title="33"><span class="co">#&gt;  4     1 leno… female    30        16 do the hooves   um         </span></a>
+<a class="sourceLine" id="cb5-34" title="34"><span class="co">#&gt;  5     1 leno… female    30        16 did they train… um         </span></a>
+<a class="sourceLine" id="cb5-35" title="35"><span class="co">#&gt;  6     1 leno… female    30        16 did they train… um         </span></a>
+<a class="sourceLine" id="cb5-36" title="36"><span class="co">#&gt;  7     1 leno… female    30        16 so you have yo… um         </span></a>
+<a class="sourceLine" id="cb5-37" title="37"><span class="co">#&gt;  8     1 leno… female    30        16 but             um         </span></a>
+<a class="sourceLine" id="cb5-38" title="38"><span class="co">#&gt;  9     1 leno… female    30        16 yeah            um         </span></a>
+<a class="sourceLine" id="cb5-39" title="39"><span class="co">#&gt; 10     1 leno… female    30        16 i bet           um         </span></a>
+<a class="sourceLine" id="cb5-40" title="40"><span class="co">#&gt; # … with 22,652 more rows, and 1 more variable: filler_count &lt;int&gt;</span></a></code></pre></div>
+</div>
+</div>
+<div id="analysis" class="section level2">
+<h2 class="hasAnchor">
+<a href="#analysis" class="anchor"></a>Analysis</h2>
+<div id="gender" class="section level3">
+<h3 class="hasAnchor">
+<a href="#gender" class="anchor"></a>Gender</h3>
+<p>The first question to explore here is whether filler or type of filler is predicted by gender differences. In Tottie, it was found that A) men use more fillers than women, but B) women use ‘um’ more than men.</p>
+<p>To get a sense what our data is doing, let’s visualize these contrasts.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1">p1 &lt;-<span class="st"> </span></a>
+<a class="sourceLine" id="cb6-2" title="2"><span class="st">  </span>sbc <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb6-3" title="3"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> gender, <span class="dt">y =</span> filler_count, <span class="dt">group =</span> <span class="dv">1</span>)) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb6-4" title="4"><span class="st">  </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">"lm"</span>) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb6-5" title="5"><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">"Gender"</span>, <span class="dt">y =</span> <span class="st">"Filler count"</span>)</a>
+<a class="sourceLine" id="cb6-6" title="6"></a>
+<a class="sourceLine" id="cb6-7" title="7">p2 &lt;-<span class="st"> </span></a>
+<a class="sourceLine" id="cb6-8" title="8"><span class="st">  </span>sbc <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb6-9" title="9"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> gender, <span class="dt">y =</span> filler_count, <span class="dt">group =</span> filler_type, <span class="dt">color =</span> filler_type)) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb6-10" title="10"><span class="st">  </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">"lm"</span>) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb6-11" title="11"><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">"Gender"</span>, <span class="dt">y =</span> <span class="st">"Filler count"</span>, <span class="dt">color =</span> <span class="st">"Filler type"</span>)</a>
+<a class="sourceLine" id="cb6-12" title="12"></a>
+<a class="sourceLine" id="cb6-13" title="13">gridExtra<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/gridExtra/topics/arrangeGrob">grid.arrange</a></span>(p1, p2, <span class="dt">ncol =</span> <span class="dv">2</span>)</a></code></pre></div>
+<p><img src="analysis-an-inference-example_files/figure-html/gender-viz-1.png" width="700"></p>
+<p>Visually, it appears that there is a slight tendency towards more fillers for men, on the one hand and then contrast between the types of fillers most used by each gender: men prefer ‘uh’ and women ‘um’. To confirm these trends we submit them to significance testing. To select the right test we need to be clear about the informational value of our variables and the number of independent variables. Our dependent variable is <code>filler_count</code>, a frequency and our independent variable, <code>gender</code> is categorical. Following Gries’ flowchart below, we see that we would be able to use the <code><a href="https://www.rdocumentation.org/packages/stats/topics/chisq.test">chisq.test()</a></code> –which is what <span class="citation">Tottie (2011)</span> did. However, we will be wanting to scale our analysis to multiple variables and Chi-squared doesn’t scale well. Another option is to explore correlation. Looking on this side of the flowchart we see that we would select ‘Possion regression’ using the <code><a href="https://www.rdocumentation.org/packages/stats/topics/glm">glm()</a></code> function.</p>
+<div class="figure">
+<img src="images/bootcamp_00_overview.png" alt="Figure: Gries’ Flowchart"><p class="caption">Figure: Gries’ Flowchart</p>
+</div>
+<!-- <img src="/Users/francojc/Documents/Academic/Research/Projects/1Active/WFU-TLC/analyzr/vignettes/images/bootcamp_00_overview.png" alt="Figure: Gries' Flowchart" width="650"/> -->
+<p>We can first test the effects of <code>gender</code> on <code>filler_count</code>.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1"><span class="co"># A</span></a>
+<a class="sourceLine" id="cb7-2" title="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/glm">glm</a></span>(filler_count <span class="op">~</span><span class="st"> </span>gender, <span class="dt">data =</span> sbc, <span class="dt">family =</span> <span class="st">"poisson"</span>))</a>
+<a class="sourceLine" id="cb7-3" title="3"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb7-4" title="4"><span class="co">#&gt; Call:</span></a>
+<a class="sourceLine" id="cb7-5" title="5"><span class="co">#&gt; glm(formula = filler_count ~ gender, family = "poisson", data = sbc)</span></a>
+<a class="sourceLine" id="cb7-6" title="6"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb7-7" title="7"><span class="co">#&gt; Deviance Residuals: </span></a>
+<a class="sourceLine" id="cb7-8" title="8"><span class="co">#&gt;     Min       1Q   Median       3Q      Max  </span></a>
+<a class="sourceLine" id="cb7-9" title="9"><span class="co">#&gt; -0.1688  -0.1688  -0.1668  -0.1668   3.9878  </span></a>
+<a class="sourceLine" id="cb7-10" title="10"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb7-11" title="11"><span class="co">#&gt; Coefficients:</span></a>
+<a class="sourceLine" id="cb7-12" title="12"><span class="co">#&gt;             Estimate Std. Error z value Pr(&gt;|z|)    </span></a>
+<a class="sourceLine" id="cb7-13" title="13"><span class="co">#&gt; (Intercept) -4.27553    0.07142 -59.861   &lt;2e-16 ***</span></a>
+<a class="sourceLine" id="cb7-14" title="14"><span class="co">#&gt; gendermale   0.02400    0.11531   0.208    0.835    </span></a>
+<a class="sourceLine" id="cb7-15" title="15"><span class="co">#&gt; ---</span></a>
+<a class="sourceLine" id="cb7-16" title="16"><span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></a>
+<a class="sourceLine" id="cb7-17" title="17"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb7-18" title="18"><span class="co">#&gt; (Dispersion parameter for poisson family taken to be 1)</span></a>
+<a class="sourceLine" id="cb7-19" title="19"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb7-20" title="20"><span class="co">#&gt;     Null deviance: 2721.7  on 22661  degrees of freedom</span></a>
+<a class="sourceLine" id="cb7-21" title="21"><span class="co">#&gt; Residual deviance: 2721.7  on 22660  degrees of freedom</span></a>
+<a class="sourceLine" id="cb7-22" title="22"><span class="co">#&gt; AIC: 3357.5</span></a>
+<a class="sourceLine" id="cb7-23" title="23"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb7-24" title="24"><span class="co">#&gt; Number of Fisher Scoring iterations: 6</span></a></code></pre></div>
+<p>So although we saw a trend (the line was slightly angled) the effect is not significant (<code>gendermale</code>: the contrast to <code>genderfemale</code> is not less than <span class="math inline">\(0.05\)</span>).</p>
+<p>Next we will add <code>filler_type</code> to the mix to give us the potential interaction effects between <code>gender</code> and <code>filler_type</code>.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1"><span class="co">#B</span></a>
+<a class="sourceLine" id="cb8-2" title="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/glm">glm</a></span>(filler_count <span class="op">~</span><span class="st"> </span>gender <span class="op">*</span><span class="st"> </span>filler_type, <span class="dt">data =</span> sbc, <span class="dt">family =</span> <span class="st">"poisson"</span>))</a>
+<a class="sourceLine" id="cb8-3" title="3"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb8-4" title="4"><span class="co">#&gt; Call:</span></a>
+<a class="sourceLine" id="cb8-5" title="5"><span class="co">#&gt; glm(formula = filler_count ~ gender * filler_type, family = "poisson", </span></a>
+<a class="sourceLine" id="cb8-6" title="6"><span class="co">#&gt;     data = sbc)</span></a>
+<a class="sourceLine" id="cb8-7" title="7"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb8-8" title="8"><span class="co">#&gt; Deviance Residuals: </span></a>
+<a class="sourceLine" id="cb8-9" title="9"><span class="co">#&gt;     Min       1Q   Median       3Q      Max  </span></a>
+<a class="sourceLine" id="cb8-10" title="10"><span class="co">#&gt; -0.2004  -0.1935  -0.1348  -0.1348   4.1949  </span></a>
+<a class="sourceLine" id="cb8-11" title="11"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb8-12" title="12"><span class="co">#&gt; Coefficients:</span></a>
+<a class="sourceLine" id="cb8-13" title="13"><span class="co">#&gt;                          Estimate Std. Error z value Pr(&gt;|z|)    </span></a>
+<a class="sourceLine" id="cb8-14" title="14"><span class="co">#&gt; (Intercept)               -4.7016     0.1250 -37.613  &lt; 2e-16 ***</span></a>
+<a class="sourceLine" id="cb8-15" title="15"><span class="co">#&gt; gendermale                 0.7936     0.1651   4.807 1.53e-06 ***</span></a>
+<a class="sourceLine" id="cb8-16" title="16"><span class="co">#&gt; filler_typeum              0.7239     0.1523   4.753 2.01e-06 ***</span></a>
+<a class="sourceLine" id="cb8-17" title="17"><span class="co">#&gt; gendermale:filler_typeum  -1.5947     0.2502  -6.374 1.85e-10 ***</span></a>
+<a class="sourceLine" id="cb8-18" title="18"><span class="co">#&gt; ---</span></a>
+<a class="sourceLine" id="cb8-19" title="19"><span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></a>
+<a class="sourceLine" id="cb8-20" title="20"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb8-21" title="21"><span class="co">#&gt; (Dispersion parameter for poisson family taken to be 1)</span></a>
+<a class="sourceLine" id="cb8-22" title="22"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb8-23" title="23"><span class="co">#&gt;     Null deviance: 2721.7  on 22661  degrees of freedom</span></a>
+<a class="sourceLine" id="cb8-24" title="24"><span class="co">#&gt; Residual deviance: 2676.5  on 22658  degrees of freedom</span></a>
+<a class="sourceLine" id="cb8-25" title="25"><span class="co">#&gt; AIC: 3316.3</span></a>
+<a class="sourceLine" id="cb8-26" title="26"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb8-27" title="27"><span class="co">#&gt; Number of Fisher Scoring iterations: 7</span></a></code></pre></div>
+<p>Here we see a number of significant effects. However, when testing for interactions, the highest-order interaction that is significant is where you focus. Any other effects cannot be reliably interpreted. That is because an interaction says that the trend for one dimension, say <code>gender</code> is not the same for the levels of another factor, say <code>filler_type</code>. This is exactly what we have here, and we visually saw this earlier –the lines crossed.</p>
+<p>Upshot: Filler frequency is not related to gender. But there is an interaction between filler type and gender – men use ‘uh’ more than ‘um’ and women the reverse.</p>
+</div>
+<div id="age" class="section level3">
+<h3 class="hasAnchor">
+<a href="#age" class="anchor"></a>Age</h3>
+<p>Turning to <code>age</code> we are already set up with the data side so all we need to do is visualize our contrasts: A) is <code>filler_count</code> predicted by <code>age</code> and B) is <code>filler_count</code> predicted by the interaction between <code>age</code> and <code>filler_type</code>. Remember that <span class="citation">Tottie (2011)</span> found A) that older speakers use more fillers and B) the filler ‘um’ was more common with younger speakers and ‘uh’ with older speakers.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1"><span class="co"># A</span></a>
+<a class="sourceLine" id="cb9-2" title="2">p1 &lt;-<span class="st"> </span></a>
+<a class="sourceLine" id="cb9-3" title="3"><span class="st">  </span>sbc <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb9-4" title="4"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> age, <span class="dt">y =</span> filler_count, <span class="dt">group =</span> <span class="dv">1</span>)) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb9-5" title="5"><span class="st">  </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">"glm"</span>) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb9-6" title="6"><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">"Age"</span>, <span class="dt">y =</span> <span class="st">"Filler count"</span>)</a>
+<a class="sourceLine" id="cb9-7" title="7"></a>
+<a class="sourceLine" id="cb9-8" title="8"><span class="co"># B</span></a>
+<a class="sourceLine" id="cb9-9" title="9">p2 &lt;-<span class="st"> </span></a>
+<a class="sourceLine" id="cb9-10" title="10"><span class="st">  </span>sbc <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb9-11" title="11"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> age, <span class="dt">y =</span> filler_count, <span class="dt">color =</span> filler_type, <span class="dt">group =</span> filler_type)) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb9-12" title="12"><span class="st">  </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">"glm"</span>) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb9-13" title="13"><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">"Age"</span>, <span class="dt">y =</span> <span class="st">"Filler count"</span>, <span class="dt">color =</span> <span class="st">"Filler type"</span>)</a>
+<a class="sourceLine" id="cb9-14" title="14"></a>
+<a class="sourceLine" id="cb9-15" title="15">gridExtra<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/gridExtra/topics/arrangeGrob">grid.arrange</a></span>(p1, p2, <span class="dt">ncol =</span> <span class="dv">2</span>)</a></code></pre></div>
+<p><img src="analysis-an-inference-example_files/figure-html/age-visualize-1.png" width="700"></p>
+<p>There appears to be an effect for <code>age</code> and an interaction between <code>age</code> and <code>filler_type</code>: Older speakers use ‘uh’ more than younger speakers, and the reverse is true for ‘um’, just not with the same strength. Let’s confirm by significance testing with <code><a href="https://www.rdocumentation.org/packages/stats/topics/glm">glm()</a></code>.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1"><span class="co"># A</span></a>
+<a class="sourceLine" id="cb10-2" title="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/glm">glm</a></span>(filler_count <span class="op">~</span><span class="st"> </span>age, <span class="dt">data =</span> sbc, <span class="dt">family =</span> <span class="st">"poisson"</span>))</a>
+<a class="sourceLine" id="cb10-3" title="3"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb10-4" title="4"><span class="co">#&gt; Call:</span></a>
+<a class="sourceLine" id="cb10-5" title="5"><span class="co">#&gt; glm(formula = filler_count ~ age, family = "poisson", data = sbc)</span></a>
+<a class="sourceLine" id="cb10-6" title="6"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb10-7" title="7"><span class="co">#&gt; Deviance Residuals: </span></a>
+<a class="sourceLine" id="cb10-8" title="8"><span class="co">#&gt;     Min       1Q   Median       3Q      Max  </span></a>
+<a class="sourceLine" id="cb10-9" title="9"><span class="co">#&gt; -0.2158  -0.1693  -0.1639  -0.1601   4.0328  </span></a>
+<a class="sourceLine" id="cb10-10" title="10"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb10-11" title="11"><span class="co">#&gt; Coefficients:</span></a>
+<a class="sourceLine" id="cb10-12" title="12"><span class="co">#&gt;              Estimate Std. Error z value Pr(&gt;|z|)    </span></a>
+<a class="sourceLine" id="cb10-13" title="13"><span class="co">#&gt; (Intercept) -4.599404   0.137766 -33.386  &lt; 2e-16 ***</span></a>
+<a class="sourceLine" id="cb10-14" title="14"><span class="co">#&gt; age          0.009323   0.003414   2.731  0.00632 ** </span></a>
+<a class="sourceLine" id="cb10-15" title="15"><span class="co">#&gt; ---</span></a>
+<a class="sourceLine" id="cb10-16" title="16"><span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></a>
+<a class="sourceLine" id="cb10-17" title="17"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb10-18" title="18"><span class="co">#&gt; (Dispersion parameter for poisson family taken to be 1)</span></a>
+<a class="sourceLine" id="cb10-19" title="19"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb10-20" title="20"><span class="co">#&gt;     Null deviance: 2721.7  on 22661  degrees of freedom</span></a>
+<a class="sourceLine" id="cb10-21" title="21"><span class="co">#&gt; Residual deviance: 2715.0  on 22660  degrees of freedom</span></a>
+<a class="sourceLine" id="cb10-22" title="22"><span class="co">#&gt; AIC: 3350.8</span></a>
+<a class="sourceLine" id="cb10-23" title="23"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb10-24" title="24"><span class="co">#&gt; Number of Fisher Scoring iterations: 6</span></a></code></pre></div>
+<p>Here there is a main effect for <code>age</code>.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" title="1"><span class="co"># B</span></a>
+<a class="sourceLine" id="cb11-2" title="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/glm">glm</a></span>(filler_count <span class="op">~</span><span class="st"> </span>age <span class="op">*</span><span class="st"> </span>filler_type, <span class="dt">data =</span> sbc, <span class="dt">family =</span> <span class="st">"poisson"</span>))</a>
+<a class="sourceLine" id="cb11-3" title="3"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb11-4" title="4"><span class="co">#&gt; Call:</span></a>
+<a class="sourceLine" id="cb11-5" title="5"><span class="co">#&gt; glm(formula = filler_count ~ age * filler_type, family = "poisson", </span></a>
+<a class="sourceLine" id="cb11-6" title="6"><span class="co">#&gt;     data = sbc)</span></a>
+<a class="sourceLine" id="cb11-7" title="7"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb11-8" title="8"><span class="co">#&gt; Deviance Residuals: </span></a>
+<a class="sourceLine" id="cb11-9" title="9"><span class="co">#&gt;     Min       1Q   Median       3Q      Max  </span></a>
+<a class="sourceLine" id="cb11-10" title="10"><span class="co">#&gt; -0.2924  -0.1768  -0.1662  -0.1495   4.1492  </span></a>
+<a class="sourceLine" id="cb11-11" title="11"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb11-12" title="12"><span class="co">#&gt; Coefficients:</span></a>
+<a class="sourceLine" id="cb11-13" title="13"><span class="co">#&gt;                    Estimate Std. Error z value Pr(&gt;|z|)    </span></a>
+<a class="sourceLine" id="cb11-14" title="14"><span class="co">#&gt; (Intercept)       -5.164806   0.186075 -27.757  &lt; 2e-16 ***</span></a>
+<a class="sourceLine" id="cb11-15" title="15"><span class="co">#&gt; age                0.022363   0.004057   5.512 3.55e-08 ***</span></a>
+<a class="sourceLine" id="cb11-16" title="16"><span class="co">#&gt; filler_typeum      1.284237   0.288832   4.446 8.74e-06 ***</span></a>
+<a class="sourceLine" id="cb11-17" title="17"><span class="co">#&gt; age:filler_typeum -0.032152   0.007474  -4.302 1.69e-05 ***</span></a>
+<a class="sourceLine" id="cb11-18" title="18"><span class="co">#&gt; ---</span></a>
+<a class="sourceLine" id="cb11-19" title="19"><span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></a>
+<a class="sourceLine" id="cb11-20" title="20"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb11-21" title="21"><span class="co">#&gt; (Dispersion parameter for poisson family taken to be 1)</span></a>
+<a class="sourceLine" id="cb11-22" title="22"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb11-23" title="23"><span class="co">#&gt;     Null deviance: 2721.7  on 22661  degrees of freedom</span></a>
+<a class="sourceLine" id="cb11-24" title="24"><span class="co">#&gt; Residual deviance: 2693.6  on 22658  degrees of freedom</span></a>
+<a class="sourceLine" id="cb11-25" title="25"><span class="co">#&gt; AIC: 3333.4</span></a>
+<a class="sourceLine" id="cb11-26" title="26"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb11-27" title="27"><span class="co">#&gt; Number of Fisher Scoring iterations: 6</span></a></code></pre></div>
+<p>And this test reveals that there is an interaction between <code>age</code> and <code>filler_type</code>.</p>
+<p>Upshot: Filler frequency is related to age, with older speakers using more. Furthermore, there is an interaction between filler type: older speakers prefer ‘uh’ to ‘um’ and younger speakers ‘um’ to ‘uh’.</p>
+</div>
+<div id="socioeconomic-class" class="section level3">
+<h3 class="hasAnchor">
+<a href="#socioeconomic-class" class="anchor"></a>Socioeconomic class</h3>
+<p>Our final excursion is to look at <code>years_edu</code> as a proxy for ‘socioeconomic class’. <span class="citation">Tottie (2011)</span> found A) that higher socio-economic status predicted more filler usage but B) the filler ‘um’ was more common with this group, whereas the lower socio-economic speakers used more ‘uh’. She used a combination of other characteristics to approximate this variable so our findings are not directly comparable –but let’s see what we find.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1"><span class="co"># A</span></a>
+<a class="sourceLine" id="cb12-2" title="2">p1 &lt;-<span class="st"> </span></a>
+<a class="sourceLine" id="cb12-3" title="3"><span class="st">  </span>sbc <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb12-4" title="4"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> years_edu, <span class="dt">y =</span> filler_count, <span class="dt">group =</span> <span class="dv">1</span>)) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb12-5" title="5"><span class="st">  </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">"glm"</span>) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb12-6" title="6"><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">"Years of education"</span>, <span class="dt">y =</span> <span class="st">"Filler count"</span>) </a>
+<a class="sourceLine" id="cb12-7" title="7"></a>
+<a class="sourceLine" id="cb12-8" title="8"><span class="co"># B</span></a>
+<a class="sourceLine" id="cb12-9" title="9">p2 &lt;-<span class="st"> </span></a>
+<a class="sourceLine" id="cb12-10" title="10"><span class="st">  </span>sbc <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb12-11" title="11"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> years_edu, <span class="dt">y =</span> filler_count, <span class="dt">color =</span> filler_type, <span class="dt">group =</span> filler_type)) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb12-12" title="12"><span class="st">  </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">"glm"</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb12-13" title="13"><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">"Years of education"</span>, <span class="dt">y =</span> <span class="st">"Filler count"</span>, <span class="dt">color =</span> <span class="st">"Filler type"</span>) </a>
+<a class="sourceLine" id="cb12-14" title="14"></a>
+<a class="sourceLine" id="cb12-15" title="15">gridExtra<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/gridExtra/topics/arrangeGrob">grid.arrange</a></span>(p1, p2, <span class="dt">ncol =</span> <span class="dv">2</span>)</a></code></pre></div>
+<p><img src="analysis-an-inference-example_files/figure-html/socioec-visualize-1.png" width="700"></p>
+<p>So it appears that the more years of education you have the more apt you are to use fillers. Furthermore, it seems that the most indicative filler that increases with years of education is ‘um’: ‘uh’ stays quite steady regardless of <code>years_edu</code>. But, no verdict until we run the tests.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" title="1"><span class="co"># A</span></a>
+<a class="sourceLine" id="cb13-2" title="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/glm">glm</a></span>(filler_count <span class="op">~</span><span class="st"> </span>years_edu, <span class="dt">data =</span> sbc, <span class="dt">family =</span> <span class="st">"poisson"</span>))</a>
+<a class="sourceLine" id="cb13-3" title="3"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb13-4" title="4"><span class="co">#&gt; Call:</span></a>
+<a class="sourceLine" id="cb13-5" title="5"><span class="co">#&gt; glm(formula = filler_count ~ years_edu, family = "poisson", data = sbc)</span></a>
+<a class="sourceLine" id="cb13-6" title="6"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb13-7" title="7"><span class="co">#&gt; Deviance Residuals: </span></a>
+<a class="sourceLine" id="cb13-8" title="8"><span class="co">#&gt;     Min       1Q   Median       3Q      Max  </span></a>
+<a class="sourceLine" id="cb13-9" title="9"><span class="co">#&gt; -0.2961  -0.1852  -0.1535  -0.1535   4.4219  </span></a>
+<a class="sourceLine" id="cb13-10" title="10"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb13-11" title="11"><span class="co">#&gt; Coefficients:</span></a>
+<a class="sourceLine" id="cb13-12" title="12"><span class="co">#&gt;             Estimate Std. Error z value Pr(&gt;|z|)    </span></a>
+<a class="sourceLine" id="cb13-13" title="13"><span class="co">#&gt; (Intercept) -7.44534    0.36186  -20.57   &lt;2e-16 ***</span></a>
+<a class="sourceLine" id="cb13-14" title="14"><span class="co">#&gt; years_edu    0.18775    0.02032    9.24   &lt;2e-16 ***</span></a>
+<a class="sourceLine" id="cb13-15" title="15"><span class="co">#&gt; ---</span></a>
+<a class="sourceLine" id="cb13-16" title="16"><span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></a>
+<a class="sourceLine" id="cb13-17" title="17"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb13-18" title="18"><span class="co">#&gt; (Dispersion parameter for poisson family taken to be 1)</span></a>
+<a class="sourceLine" id="cb13-19" title="19"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb13-20" title="20"><span class="co">#&gt;     Null deviance: 2721.7  on 22661  degrees of freedom</span></a>
+<a class="sourceLine" id="cb13-21" title="21"><span class="co">#&gt; Residual deviance: 2642.6  on 22660  degrees of freedom</span></a>
+<a class="sourceLine" id="cb13-22" title="22"><span class="co">#&gt; AIC: 3278.5</span></a>
+<a class="sourceLine" id="cb13-23" title="23"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb13-24" title="24"><span class="co">#&gt; Number of Fisher Scoring iterations: 7</span></a></code></pre></div>
+<p>Yep, our trend for an effect of <code>years_edu</code> is confirmed.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" title="1"><span class="co">#B</span></a>
+<a class="sourceLine" id="cb14-2" title="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/glm">glm</a></span>(filler_count <span class="op">~</span><span class="st"> </span>years_edu <span class="op">*</span><span class="st"> </span>filler_type, <span class="dt">data =</span> sbc, <span class="dt">family =</span> <span class="st">"poisson"</span>))</a>
+<a class="sourceLine" id="cb14-3" title="3"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb14-4" title="4"><span class="co">#&gt; Call:</span></a>
+<a class="sourceLine" id="cb14-5" title="5"><span class="co">#&gt; glm(formula = filler_count ~ years_edu * filler_type, family = "poisson", </span></a>
+<a class="sourceLine" id="cb14-6" title="6"><span class="co">#&gt;     data = sbc)</span></a>
+<a class="sourceLine" id="cb14-7" title="7"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb14-8" title="8"><span class="co">#&gt; Deviance Residuals: </span></a>
+<a class="sourceLine" id="cb14-9" title="9"><span class="co">#&gt;     Min       1Q   Median       3Q      Max  </span></a>
+<a class="sourceLine" id="cb14-10" title="10"><span class="co">#&gt; -0.4152  -0.1655  -0.1621  -0.1381   4.0572  </span></a>
+<a class="sourceLine" id="cb14-11" title="11"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb14-12" title="12"><span class="co">#&gt; Coefficients:</span></a>
+<a class="sourceLine" id="cb14-13" title="13"><span class="co">#&gt;                         Estimate Std. Error z value Pr(&gt;|z|)    </span></a>
+<a class="sourceLine" id="cb14-14" title="14"><span class="co">#&gt; (Intercept)             -4.66619    0.54520  -8.559  &lt; 2e-16 ***</span></a>
+<a class="sourceLine" id="cb14-15" title="15"><span class="co">#&gt; years_edu                0.02085    0.03278   0.636    0.525    </span></a>
+<a class="sourceLine" id="cb14-16" title="16"><span class="co">#&gt; filler_typeum           -5.01604    0.74024  -6.776 1.23e-11 ***</span></a>
+<a class="sourceLine" id="cb14-17" title="17"><span class="co">#&gt; years_edu:filler_typeum  0.29354    0.04219   6.957 3.47e-12 ***</span></a>
+<a class="sourceLine" id="cb14-18" title="18"><span class="co">#&gt; ---</span></a>
+<a class="sourceLine" id="cb14-19" title="19"><span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></a>
+<a class="sourceLine" id="cb14-20" title="20"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb14-21" title="21"><span class="co">#&gt; (Dispersion parameter for poisson family taken to be 1)</span></a>
+<a class="sourceLine" id="cb14-22" title="22"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb14-23" title="23"><span class="co">#&gt;     Null deviance: 2721.7  on 22661  degrees of freedom</span></a>
+<a class="sourceLine" id="cb14-24" title="24"><span class="co">#&gt; Residual deviance: 2591.7  on 22658  degrees of freedom</span></a>
+<a class="sourceLine" id="cb14-25" title="25"><span class="co">#&gt; AIC: 3231.6</span></a>
+<a class="sourceLine" id="cb14-26" title="26"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb14-27" title="27"><span class="co">#&gt; Number of Fisher Scoring iterations: 7</span></a></code></pre></div>
+<p>And there is an interaction – ‘um’ increases with years of education.</p>
+<p>Upshot: In the fillers analysis it appears that the more education a speaker has the more fillers are used. However, when looking at the interaction between filler type and education it is clear that the effect is driven by the increasing usage of ‘um’ in speakers with more education –usage of ‘uh’ stays constant.</p>
+</div>
+</div>
+<div id="summary" class="section level2">
+<h2 class="hasAnchor">
+<a href="#summary" class="anchor"></a>Summary</h2>
+<p>These comparisons were aimed at replicating the approach in <span class="citation">Tottie (2011)</span> with American English. We have found some similarities and differences:</p>
+<p><strong>Gender</strong></p>
+<p>We found no difference between the overall usage of fillers between men and women –but we did find that there is a difference in the type of filler used: men tend towards ‘uh’ and women ‘um’.</p>
+<p><strong>Age</strong></p>
+<p>We found both effects reported: older speakers use more, and ‘uh’ is the preferred filler. ‘um’ is prefered by younger speakers but decreases with age, however, less dramatically.</p>
+<p><strong>Socioeconomic class</strong></p>
+<p>The data revealed the same finding as in <span class="citation">Tottie (2011)</span> –yet we used <code>years_edu</code>. More educated speakers tend to use more fillers and the filler of choice is ‘um’. ‘uh’ did not seem to change with years of education.</p>
+</div>
+<div id="extended-analysis" class="section level2">
+<h2 class="hasAnchor">
+<a href="#extended-analysis" class="anchor"></a>Extended analysis</h2>
+<p>But you should be a bit interested in some of these findings. For example, are there differences between younger females versus younger males? Do educated males use more or less fillers than educated females? How about the types of fillers?</p>
+<p>To explore these types of questions we need to add more independent variables to our analysis. Using regression we can add various independent variables without changes to our approach –the only difference being that the higher-level the interaction become the more difficult it becomes to interpret the findings. Let’s go ahead and throw <code>gender</code>, <code>age</code> and <code>years_edu</code> into the model predicting overall filler usage.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/glm">glm</a></span>(filler_count <span class="op">~</span><span class="st"> </span>gender <span class="op">*</span><span class="st"> </span>age <span class="op">*</span><span class="st"> </span>years_edu, <span class="dt">data =</span> sbc, <span class="dt">family =</span> <span class="st">"poisson"</span>))</a>
+<a class="sourceLine" id="cb15-2" title="2"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb15-3" title="3"><span class="co">#&gt; Call:</span></a>
+<a class="sourceLine" id="cb15-4" title="4"><span class="co">#&gt; glm(formula = filler_count ~ gender * age * years_edu, family = "poisson", </span></a>
+<a class="sourceLine" id="cb15-5" title="5"><span class="co">#&gt;     data = sbc)</span></a>
+<a class="sourceLine" id="cb15-6" title="6"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb15-7" title="7"><span class="co">#&gt; Deviance Residuals: </span></a>
+<a class="sourceLine" id="cb15-8" title="8"><span class="co">#&gt;     Min       1Q   Median       3Q      Max  </span></a>
+<a class="sourceLine" id="cb15-9" title="9"><span class="co">#&gt; -0.5230  -0.1606  -0.1485  -0.1359   4.0932  </span></a>
+<a class="sourceLine" id="cb15-10" title="10"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb15-11" title="11"><span class="co">#&gt; Coefficients:</span></a>
+<a class="sourceLine" id="cb15-12" title="12"><span class="co">#&gt;                            Estimate Std. Error z value Pr(&gt;|z|)    </span></a>
+<a class="sourceLine" id="cb15-13" title="13"><span class="co">#&gt; (Intercept)              -10.377590   1.933054  -5.368 7.94e-08 ***</span></a>
+<a class="sourceLine" id="cb15-14" title="14"><span class="co">#&gt; gendermale                 9.414340   2.991603   3.147 0.001650 ** </span></a>
+<a class="sourceLine" id="cb15-15" title="15"><span class="co">#&gt; age                        0.059658   0.063855   0.934 0.350163    </span></a>
+<a class="sourceLine" id="cb15-16" title="16"><span class="co">#&gt; years_edu                  0.371089   0.110965   3.344 0.000825 ***</span></a>
+<a class="sourceLine" id="cb15-17" title="17"><span class="co">#&gt; gendermale:age            -0.071277   0.078328  -0.910 0.362835    </span></a>
+<a class="sourceLine" id="cb15-18" title="18"><span class="co">#&gt; gendermale:years_edu      -0.726721   0.196085  -3.706 0.000210 ***</span></a>
+<a class="sourceLine" id="cb15-19" title="19"><span class="co">#&gt; age:years_edu             -0.003853   0.003635  -1.060 0.289213    </span></a>
+<a class="sourceLine" id="cb15-20" title="20"><span class="co">#&gt; gendermale:age:years_edu   0.008680   0.004906   1.769 0.076829 .  </span></a>
+<a class="sourceLine" id="cb15-21" title="21"><span class="co">#&gt; ---</span></a>
+<a class="sourceLine" id="cb15-22" title="22"><span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></a>
+<a class="sourceLine" id="cb15-23" title="23"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb15-24" title="24"><span class="co">#&gt; (Dispersion parameter for poisson family taken to be 1)</span></a>
+<a class="sourceLine" id="cb15-25" title="25"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb15-26" title="26"><span class="co">#&gt;     Null deviance: 2721.7  on 22661  degrees of freedom</span></a>
+<a class="sourceLine" id="cb15-27" title="27"><span class="co">#&gt; Residual deviance: 2570.6  on 22654  degrees of freedom</span></a>
+<a class="sourceLine" id="cb15-28" title="28"><span class="co">#&gt; AIC: 3218.5</span></a>
+<a class="sourceLine" id="cb15-29" title="29"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb15-30" title="30"><span class="co">#&gt; Number of Fisher Scoring iterations: 7</span></a></code></pre></div>
+<p>Here we see the highest-level interaction is between <code>gender</code> and <code>years_edu</code>. Let’s plot these two independent variables to see them.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" title="1">p1 &lt;-<span class="st"> </span></a>
+<a class="sourceLine" id="cb16-2" title="2"><span class="st">  </span>sbc <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb16-3" title="3"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> years_edu, <span class="dt">y =</span> filler_count, <span class="dt">group =</span> gender, <span class="dt">color =</span> gender)) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb16-4" title="4"><span class="st">  </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">"glm"</span>) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb16-5" title="5"><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">"Years of education"</span>, <span class="dt">y =</span> <span class="st">"Filler count"</span>, <span class="dt">color =</span> <span class="st">"Gender"</span>)</a>
+<a class="sourceLine" id="cb16-6" title="6">p1</a></code></pre></div>
+<p><img src="analysis-an-inference-example_files/figure-html/fillers-interactions-visualize-1.png" width="700"></p>
+<p>What we see here is the apparent trend towards women using more fillers as a education level. If we want to explore this effect a bit more, we could try to see if there is a filler in particular that is driving this effect by viewing the results by each filler type ‘uh’ and ‘um’.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" title="1">p1 <span class="op">+</span><span class="st"> </span><span class="kw">facet_grid</span>(filler_type <span class="op">~</span><span class="st"> </span>.)</a></code></pre></div>
+<p><img src="analysis-an-inference-example_files/figure-html/fillers-interactions-visualize-facet-1.png" width="700"></p>
+<p>And there it is, women use ‘um’ as a function of education. Let’s confirm.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/glm">glm</a></span>(filler_count <span class="op">~</span><span class="st"> </span>gender <span class="op">*</span><span class="st"> </span>years_edu <span class="op">*</span><span class="st"> </span>filler_type, <span class="dt">data =</span> sbc, <span class="dt">family =</span> <span class="st">"poisson"</span>))</a>
+<a class="sourceLine" id="cb18-2" title="2"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb18-3" title="3"><span class="co">#&gt; Call:</span></a>
+<a class="sourceLine" id="cb18-4" title="4"><span class="co">#&gt; glm(formula = filler_count ~ gender * years_edu * filler_type, </span></a>
+<a class="sourceLine" id="cb18-5" title="5"><span class="co">#&gt;     family = "poisson", data = sbc)</span></a>
+<a class="sourceLine" id="cb18-6" title="6"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb18-7" title="7"><span class="co">#&gt; Deviance Residuals: </span></a>
+<a class="sourceLine" id="cb18-8" title="8"><span class="co">#&gt;     Min       1Q   Median       3Q      Max  </span></a>
+<a class="sourceLine" id="cb18-9" title="9"><span class="co">#&gt; -0.4343  -0.1640  -0.1355  -0.1323   4.1944  </span></a>
+<a class="sourceLine" id="cb18-10" title="10"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb18-11" title="11"><span class="co">#&gt; Coefficients:</span></a>
+<a class="sourceLine" id="cb18-12" title="12"><span class="co">#&gt;                                     Estimate Std. Error z value Pr(&gt;|z|)</span></a>
+<a class="sourceLine" id="cb18-13" title="13"><span class="co">#&gt; (Intercept)                        -4.542145   0.771532  -5.887 3.93e-09</span></a>
+<a class="sourceLine" id="cb18-14" title="14"><span class="co">#&gt; gendermale                          0.172824   1.159984   0.149    0.882</span></a>
+<a class="sourceLine" id="cb18-15" title="15"><span class="co">#&gt; years_edu                          -0.009897   0.047352  -0.209    0.834</span></a>
+<a class="sourceLine" id="cb18-16" title="16"><span class="co">#&gt; filler_typeum                      -6.028096   0.968073  -6.227 4.76e-10</span></a>
+<a class="sourceLine" id="cb18-17" title="17"><span class="co">#&gt; gendermale:years_edu                0.037583   0.069887   0.538    0.591</span></a>
+<a class="sourceLine" id="cb18-18" title="18"><span class="co">#&gt; gendermale:filler_typeum            7.376951   1.838019   4.014 5.98e-05</span></a>
+<a class="sourceLine" id="cb18-19" title="19"><span class="co">#&gt; years_edu:filler_typeum             0.383037   0.056038   6.835 8.18e-12</span></a>
+<a class="sourceLine" id="cb18-20" title="20"><span class="co">#&gt; gendermale:years_edu:filler_typeum -0.518142   0.110305  -4.697 2.64e-06</span></a>
+<a class="sourceLine" id="cb18-21" title="21"><span class="co">#&gt;                                       </span></a>
+<a class="sourceLine" id="cb18-22" title="22"><span class="co">#&gt; (Intercept)                        ***</span></a>
+<a class="sourceLine" id="cb18-23" title="23"><span class="co">#&gt; gendermale                            </span></a>
+<a class="sourceLine" id="cb18-24" title="24"><span class="co">#&gt; years_edu                             </span></a>
+<a class="sourceLine" id="cb18-25" title="25"><span class="co">#&gt; filler_typeum                      ***</span></a>
+<a class="sourceLine" id="cb18-26" title="26"><span class="co">#&gt; gendermale:years_edu                  </span></a>
+<a class="sourceLine" id="cb18-27" title="27"><span class="co">#&gt; gendermale:filler_typeum           ***</span></a>
+<a class="sourceLine" id="cb18-28" title="28"><span class="co">#&gt; years_edu:filler_typeum            ***</span></a>
+<a class="sourceLine" id="cb18-29" title="29"><span class="co">#&gt; gendermale:years_edu:filler_typeum ***</span></a>
+<a class="sourceLine" id="cb18-30" title="30"><span class="co">#&gt; ---</span></a>
+<a class="sourceLine" id="cb18-31" title="31"><span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></a>
+<a class="sourceLine" id="cb18-32" title="32"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb18-33" title="33"><span class="co">#&gt; (Dispersion parameter for poisson family taken to be 1)</span></a>
+<a class="sourceLine" id="cb18-34" title="34"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb18-35" title="35"><span class="co">#&gt;     Null deviance: 2721.7  on 22661  degrees of freedom</span></a>
+<a class="sourceLine" id="cb18-36" title="36"><span class="co">#&gt; Residual deviance: 2514.0  on 22654  degrees of freedom</span></a>
+<a class="sourceLine" id="cb18-37" title="37"><span class="co">#&gt; AIC: 3161.9</span></a>
+<a class="sourceLine" id="cb18-38" title="38"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb18-39" title="39"><span class="co">#&gt; Number of Fisher Scoring iterations: 7</span></a></code></pre></div>
+<p>Confirmed.</p>
+<p><strong>Final thought</strong></p>
+<p>There are many more contrasts that we could explore, but without a hypothesis we would just be fishing. It’s already tempting to draw some sort of reasoning for <em>why</em> we see ‘um’ used more by educated women than be educated men –but we have no principled reason! And in a real study we wouldn’t come to this analysis with no predictions. Those predictions would guide our analysis, and therefore reduce the number of contrasts to explore and give us the theoretical foundation to interpret the findings.</p>
+</div>
 </div>
 <div id="references" class="section level1 unnumbered">
 <h1 class="hasAnchor">
@@ -164,6 +570,14 @@
       <ul class="nav nav-pills nav-stacked">
 <li><a href="#speech-corpora-and-sociolinguistics">Speech corpora and sociolinguistics</a></li>
       <li><a href="#data">Data</a></li>
+      <li>
+<a href="#case-study">Case Study</a><ul class="nav nav-pills nav-stacked">
+<li><a href="#prepare-the-variables">Prepare the variables</a></li>
+      <li><a href="#analysis">Analysis</a></li>
+      <li><a href="#summary">Summary</a></li>
+      <li><a href="#extended-analysis">Extended analysis</a></li>
+      </ul>
+</li>
       <li><a href="#references">References</a></li>
       </ul>
 </div>
