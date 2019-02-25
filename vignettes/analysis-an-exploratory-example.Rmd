@@ -1,0 +1,196 @@
+---
+title: "Analysis: an exploratory example"
+author: "Jerid Francom"
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::html_vignette:
+    toc: true
+    df_print: tibble
+vignette: >
+  %\VignetteIndexEntry{Analysis: an exploratory example}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: bibliography.bib
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Exploring word frequency distributions
+
+A common task in text analysis is to explore the distribution of words (or terms) in a text collection. There are a number of ways in which a research can operationalize frequency which can change the results quite dramatically. In this case study, I will demonstrate the difference between two frequency measures: raw counts (n) and Term-weighted Inverse Document Frequency (tf-idf). I will use the later to explore the similarity between written genres (categories) in the Brown Corpus of Written American English. 
+
+# Data
+
+Let's access a curated version of this data through the `analyzr` package. First, install and load the package, and the main tidyverse tools. 
+
+```{r install-analyzr, eval=FALSE}
+devtools::install_github("WFU-TLC/analyzr")
+```
+
+```{r libraries}
+library(tidyverse)
+library(tidytext)
+library(analyzr)
+```
+
+Let's take a look at the `brown_words` dataset. 
+
+```{r data-first-look}
+glimpse(brown_words)
+```
+
+To find out more about the data we can look at the data dictionary provided in the `analyzr` package with `?brown`. 
+
+# Case study
+
+## Prepare the variables
+
+The first step will be to calculate the relevant frequency metrics. Each of our measures will be grouped by category to highlight the similarity and difference between each. 
+
+```{r calculate-frequency-brown}
+brown_category_words <- # word counts by category
+  brown_words %>% 
+  group_by(category, word) %>% 
+  count(sort = TRUE) %>% 
+  ungroup()
+  
+brown_total_words <- # calculate total words per category
+  brown_category_words %>% 
+  group_by(category) %>% 
+  summarise(total = sum(n))
+
+# Add `total` to `brown_category_words`
+brown_category_words <- left_join(brown_category_words, brown_total_words)
+
+# Observe the natural skew of word frequency distributions
+brown_category_words %>% 
+  ggplot(aes(n/total, fill = category)) +
+  geom_histogram(show.legend = FALSE) +
+  xlim(NA, .0009) +
+  facet_wrap(~category, ncol = 3, scales = "free_y")
+
+# Observe the top 15 most frequent words in each category
+brown_category_words %>% 
+  arrange(category, desc(n)) %>% 
+  mutate(word = factor(word, levels = rev(unique(word)))) %>% 
+  group_by(category) %>% 
+  top_n(15, n) %>% 
+  ungroup() %>% 
+  ggplot(aes(word, n, fill = category)) +
+  geom_col(show.legend = FALSE) +
+  labs(x = NULL, y = "n") +
+  theme(axis.text.y = element_text(size = 4)) +
+  facet_wrap(~category, ncol = 3, scales = "free") +
+  coord_flip()
+```
+
+As we can see the most frequent words, in terms of number of occurrences is very similar between the categories. This is very much expected as natural language tends to show a striking leftward skew in frequency counts with primarily grammatical words forming the majority of word tokens in any (sizable) corpus. To distinguish between the words the form the scaffolding of language (grammatical) and words of importance (content), we will use the Term-weighted Inverse Document Frequency (tf-idf). This measure takes into the account the overall distribution across documents within a category weighting those terms that occur in many documents within a category (such as those in the above raw frequency plot) lower. On the whole, this measure attempts to strikes a balance between common grammatical terms and content terms. 
+
+```{r calculate-tf-idf-brown}
+brown_category_freq <- # calculate the tf-idf measure
+  brown_category_words %>% 
+  bind_tf_idf(word, category, n) %>% 
+  arrange(category, desc(tf_idf)) %>% 
+  ungroup()
+
+brown_category_freq # View
+
+# Plot the 15 most important terms (tf-idf) for each category
+brown_category_freq %>% 
+  arrange(desc(tf_idf)) %>% 
+  mutate(word = factor(word, levels = rev(unique(word)))) %>% 
+  group_by(category) %>% 
+  top_n(15, tf_idf) %>% 
+  ungroup() %>% 
+  ggplot(aes(word, tf_idf, fill = category)) +
+  geom_col(show.legend = FALSE) +
+  labs(x = NULL, y = "tf-idf") +
+  theme(axis.text.y = element_text(size = 4)) +
+  facet_wrap(~category, ncol = 3, scales = "free") +
+  coord_flip()
+
+```
+
+## Analysis
+
+### Category similarity
+
+Now that we have a measure which helps us get at the content of the categories, let's now find out which categories tend to be similar to each other in text content. We will want to find the pairwise corrlation between the word frequencies and categories. The `widyr` package provides a key function for this task `pairwise_cor()`. We will use the `tf_idf` score to focus in on the distribution of words from a importance-based perspective. 
+
+```{r calculate-document-cor-brown}
+library(widyr)
+
+brown_category_cor <- 
+  brown_category_freq %>% 
+  pairwise_cor(category, word, tf_idf)
+
+brown_category_cor # View the cateogory-category correlation coefficients
+```
+
+To appreciate the relationships between the categories, we will plot a network graph. This requires packages for visualizing networks `ggraph` and `igraph`.  
+
+```{r visualize-document-cor-brown}
+library(ggraph)
+library(igraph)
+
+set.seed(1234) # make the network graph reproducible
+
+brown_category_cor %>% 
+  filter(correlation > .05) %>% # set a minimal threshold on correlation
+  graph_from_data_frame() %>%
+  ggraph(layout = "fr") +
+  geom_edge_link(aes(alpha = correlation, width = correlation), color = "grey") +
+  geom_node_point(size = 6, color = "lightblue") +
+  geom_node_text(aes(label = name), repel = TRUE) +
+  labs(title = "Brown Corpus category correlations") +
+  theme_void()
+```
+
+
+```{r collocations-bc, include=FALSE, eval=FALSE}
+# Collocations
+
+brown_collocations <- 
+  brown_words %>% 
+  udpipe::collocation(term = "word", group = "doc_id", ngram_max = 3, n_min = 10)
+
+brown_collocations %>% 
+  filter(str_detect(right, "house"))
+
+brown_collocations %>% 
+  filter(str_detect(left, "\\bold"))
+```
+
+
+```{r word-associations-brown, include=FALSE, eval=FALSE}
+
+# - Word associations
+#   - `udpipe::keywords_collocation()` approach
+#   - [Word embeddings](https://juliasilge.com/blog/tidy-word-vectors/) approach
+
+```
+
+
+```{r kwic-bc, include=FALSE, eval=FALSE}
+# KWIC
+quanteda::kwic(brown$text[1:2], pattern = "house")
+```
+
+<!-- - Topic modeling -->
+<!-- - Term-Term Associations -->
+<!-- - Word embeddings -->
+
+## Summary
+
+From this exploratory approach, we can gather that there are three groupings that show some overlap in content. This finding could be harnessed to then decided whether or not to conflate some categories.
+
+For more ideas in terms of text exploration see @Silge2017
+
+# References
+
+

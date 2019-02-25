@@ -1,0 +1,58 @@
+---
+title: "Analysis: a prediction example"
+author: "Jerid Francom"
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::html_vignette:
+    toc: true
+    df_print: tibble
+vignette: >
+  %\VignetteIndexEntry{Analysis: a prediction example}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: bibliography.bib
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+<!-- SOURCE:
+
+- https://juliasilge.com/blog/tidy-text-classification/ (glmnet)
+- Machine Learning with R (Lantz) (naiveBayes)
+
+-->
+
+# Topic
+
+
+<!-- CODE:
+
+1. Read in the `sms` data (`analyzr` package)
+2. Convert `sms_type` to factor
+3. Unnest tokens (remove stopwords and filter words with low frequency)
+4. Visualize high frequency terms by `sms_type`
+4. Create splits (with `rsample`)
+5. Convert to binary features (for `e1071` naiveBayes())
+6. Create model on training data
+7. Predict model on testing data
+8. Evaluate results with confusion matrix
+
+-->
+
+# Data
+
+# Case study
+
+## Prepare the variables
+
+## Analysis
+
+## Summary
+
+# References
+

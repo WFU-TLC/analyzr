@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Function reference • analyzr</title>
+<title>SMS Spam Collection v. 1 — sms • analyzr</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,7 +30,13 @@
 
 
 
-<meta property="og:title" content="Function reference" />
+<meta property="og:title" content="SMS Spam Collection v. 1 — sms" />
+
+<meta property="og:description" content="The SMS Spam Collection v.1 is a public set of SMS labeled messages that
+have been collected for mobile phone spam research. It has one collection
+composed by 5,574 English, real and non-enconded messages, tagged according
+being legitimate (ham) or spam." />
+<meta name="twitter:card" content="summary" />
 
 
 
@@ -47,7 +53,7 @@
   </head>
 
   <body>
-    <div class="container template-reference-index">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -83,7 +89,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/analysis-a-prediction-example.html">Analysis: a prediction example</a>
+      <a href="../articles/analysis-a-prediction-example.html">Vignette Title</a>
     </li>
     <li>
       <a href="../articles/analysis-an-exploratory-example.html">Analysis: an exploratory example</a>
@@ -99,6 +105,9 @@
     </li>
     <li>
       <a href="../articles/first-steps-in-wrangling-data.html">First Steps in Wrangling Data</a>
+    </li>
+    <li>
+      <a href="../articles/flc_test.html">FLC Test</a>
     </li>
     <li>
       <a href="../articles/getting-data-in-and-out-of-r.html">Getting data in and out of R</a>
@@ -127,90 +136,46 @@
       </header>
 
 <div class="row">
-  <div class="contents col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Reference</h1>
+    <h1>SMS Spam Collection v. 1</h1>
+    <small class="dont-index">Source: <a href='https://github.com/WFU-TLC/analyzr/blob/master/R/sms.R'><code>R/sms.R</code></a></small>
+    <div class="hidden name"><code>sms.Rd</code></div>
     </div>
 
-    <table class="ref-index">
+    <div class="ref-description">
+    
+    <p>The SMS Spam Collection v.1 is a public set of SMS labeled messages that
+have been collected for mobile phone spam research. It has one collection
+composed by 5,574 English, real and non-enconded messages, tagged according
+being legitimate (ham) or spam.</p>
+    
+    </div>
 
-    <colgroup>
-      
-      <col class="alias" />
-      <col class="title" />
-    </colgroup>
+    <pre class="usage"><span class='no'>sms</span></pre>
+        
+    <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
 
-    <tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr>
-      <tr>
-        
-        <td>
-          <p><code><a href="brown.html">brown</a></code> </p>
-        </td>
-        <td><p>The Brown Corpus of Written American English</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="brown_words.html">brown_words</a></code> </p>
-        </td>
-        <td><p>The Brown Corpus of Written American English (words)</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="get_compressed_data.html">get_compressed_data()</a></code> </p>
-        </td>
-        <td><p>Download a Compressed File and Decompress its Contents</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="sbc.html">sbc</a></code> </p>
-        </td>
-        <td><p>Santa Barbara Corpus of Spoken American English</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="sdac.html">sdac</a></code> </p>
-        </td>
-        <td><p>Switchboard Dialog Act Corpus</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="sdac_files.html">sdac_files</a></code> </p>
-        </td>
-        <td><p>Switchboard Dialog Act Corpus Files</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="sdac_files_partial.html">sdac_files_partial</a></code> </p>
-        </td>
-        <td><p>Switchboard Dialog Act Corpus Files - Partially curated</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="sdac_speaker_meta.html">sdac_speaker_meta</a></code> </p>
-        </td>
-        <td><p>Switchboard Dialog Act Corpus Metadata</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="sms.html">sms</a></code> </p>
-        </td>
-        <td><p>SMS Spam Collection v. 1</p></td>
-      </tr>
-    </tbody>
-    </table>
+    <p>A data frame with 4,837 rows and 2 variables:</p><dl class='dl-horizontal'>
+  <dt>sms_type</dt><dd><p>Type of message; either spam or ham</p></dd>
+  <dt>message</dt><dd><p>The sms message</p></dd>
+</dl>
+    
+    <h2 class="hasAnchor" id="source"><a class="anchor" href="#source"></a>Source</h2>
+
+    <p><a href='http://www.dt.fee.unicamp.br/~tiago/smsspamcollection/smsspamcollection.zip'>http://www.dt.fee.unicamp.br/~tiago/smsspamcollection/smsspamcollection.zip</a></p>
+    
+
   </div>
-
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#section-all-functions">All functions</a></li>
-    </ul>
+      
+      <li><a href="#format">Format</a></li>
+
+      <li><a href="#source">Source</a></li>
+          </ul>
+
   </div>
 </div>
 
