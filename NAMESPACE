@@ -2,7 +2,4 @@
 
 export("%>%")
 export(get_compressed_data)
-export(hello)
-export(printer)
-import(tibble)
 importFrom(magrittr,"%>%")
