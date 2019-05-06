@@ -44,7 +44,9 @@ Let's start by reading in some data from a URL with `rio::import()` and take a q
 
 The first dataset is in SPSS format (`.sav`). It is from the Pew Research Center. More information on this dataset can be found here: [http://users.wfu.edu/dewittme/data/sample/aug16_nr_public/readme.txt](http://users.wfu.edu/dewittme/data/sample/aug16_nr_public/readme.txt)
 
-```{r remote-data-gssd-sav}
+
+```{r remote-data-gssd-sav, eval=FALSE}
+
 # Pew Public Opinion data
 
 pew <- import(file = "http://users.wfu.edu/dewittme/data/sample/aug16_nr_public/Aug16_nr_public.sav")
@@ -52,9 +54,9 @@ pew <- import(file = "http://users.wfu.edu/dewittme/data/sample/aug16_nr_public/
 glimpse(pew)
 ```
 
-Now let's import a STATA file (`.dta`). More information on this dataset can be found here: [http://www2.stat.duke.edu/~jerry/sta103/labs/lab8a.html](http://www2.stat.duke.edu/~jerry/sta103/labs/lab8a.html)
+Now let's import a STATA file (`.dta`). More information on this dataset can be found here: [http://www2.stat.duke.edu/~jerry/sta103/labs/lab8a.html](http://www2.stat.duke.edu/~jerry/sta103/labs/lab8a.html) 
 
-```{r remote-dta}
+```{r remote-dta, eval=FALSE}
 # Sesame Street data
 
 sesame <- import(file = "http://users.wfu.edu/dewittme/data/sample/sesame.dta")
@@ -80,7 +82,7 @@ After working with the data that your imported into R, you will want to save thi
 
 Let's export our data. 
 
-```{r}
+```{r export-data, eval=FALSE}
 export(pew, file = "~/Desktop/pew.csv")
 export(sesame, file = "~/Desktop/sesame.tsv")
 ```

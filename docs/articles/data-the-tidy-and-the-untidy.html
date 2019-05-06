@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Data: The Tidy and the Untidy • analyzr</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/cosmo/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="Data: The Tidy and the Untidy">
@@ -45,32 +45,8 @@
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Articles
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/analysis-an-inference-example.html">Analysis: an inference example</a>
-    </li>
-    <li>
-      <a href="../articles/basics-of-the-grammar-of-graphics.html">Basics of the Grammar of Graphics</a>
-    </li>
-    <li>
-      <a href="../articles/data-the-tidy-and-the-untidy.html">Data: The Tidy and the Untidy</a>
-    </li>
-    <li>
-      <a href="../articles/first-steps-in-wrangling-data.html">First Steps in Wrangling Data</a>
-    </li>
-    <li>
-      <a href="../articles/getting-data-in-and-out-of-r.html">Getting data in and out of R</a>
-    </li>
-    <li>
-      <a href="../articles/short_note_on_literate_programming.html">A Short Note on Literate Programming</a>
-    </li>
-  </ul>
+  <a href="../articles/index.html">Articles</a>
 </li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
@@ -95,7 +71,7 @@
       <h1>Data: The Tidy and the Untidy</h1>
                         <h4 class="author">Jerid Francom</h4>
             
-            <h4 class="date">2019-02-22</h4>
+            <h4 class="date">2019-05-06</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/WFU-TLC/analyzr/blob/master/vignettes/data-the-tidy-and-the-untidy.Rmd"><code>vignettes/data-the-tidy-and-the-untidy.Rmd</code></a></small>
       <div class="hidden name"><code>data-the-tidy-and-the-untidy.Rmd</code></div>
@@ -115,18 +91,16 @@
 <p>Let’s attach the packages we will need for this vignette. If you do not have a package, use the RStudio interface, or the following command, to install it before continuing.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/install.packages">install.packages</a></span>(<span class="st">"rio"</span>) <span class="co"># install rio package</span></a></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(tidyverse) <span class="co"># core packages </span></a>
-<a class="sourceLine" id="cb2-2" title="2"><span class="co">#&gt; ── Attaching packages ───────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──</span></a>
-<a class="sourceLine" id="cb2-3" title="3"><span class="co">#&gt; ✔ ggplot2 3.1.0     ✔ purrr   0.3.0</span></a>
-<a class="sourceLine" id="cb2-4" title="4"><span class="co">#&gt; ✔ tibble  2.0.1     ✔ dplyr   0.7.8</span></a>
-<a class="sourceLine" id="cb2-5" title="5"><span class="co">#&gt; ✔ tidyr   0.8.2     ✔ stringr 1.3.1</span></a>
-<a class="sourceLine" id="cb2-6" title="6"><span class="co">#&gt; ✔ readr   1.3.1     ✔ forcats 0.3.0</span></a>
-<a class="sourceLine" id="cb2-7" title="7"><span class="co">#&gt; Warning: package 'tibble' was built under R version 3.5.2</span></a>
-<a class="sourceLine" id="cb2-8" title="8"><span class="co">#&gt; Warning: package 'purrr' was built under R version 3.5.2</span></a>
-<a class="sourceLine" id="cb2-9" title="9"><span class="co">#&gt; ── Conflicts ──────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──</span></a>
-<a class="sourceLine" id="cb2-10" title="10"><span class="co">#&gt; ✖ dplyr::filter() masks stats::filter()</span></a>
-<a class="sourceLine" id="cb2-11" title="11"><span class="co">#&gt; ✖ dplyr::lag()    masks stats::lag()</span></a>
-<a class="sourceLine" id="cb2-12" title="12"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(rio) <span class="co"># import/export </span></a>
-<a class="sourceLine" id="cb2-13" title="13"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(datasets) <span class="co"># a package of toy datasets</span></a></code></pre></div>
+<a class="sourceLine" id="cb2-2" title="2"><span class="co">#&gt; ── Attaching packages ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──</span></a>
+<a class="sourceLine" id="cb2-3" title="3"><span class="co">#&gt; ✔ ggplot2 3.1.1       ✔ purrr   0.3.2  </span></a>
+<a class="sourceLine" id="cb2-4" title="4"><span class="co">#&gt; ✔ tibble  2.1.1       ✔ dplyr   0.8.0.1</span></a>
+<a class="sourceLine" id="cb2-5" title="5"><span class="co">#&gt; ✔ tidyr   0.8.3       ✔ stringr 1.4.0  </span></a>
+<a class="sourceLine" id="cb2-6" title="6"><span class="co">#&gt; ✔ readr   1.3.1       ✔ forcats 0.4.0</span></a>
+<a class="sourceLine" id="cb2-7" title="7"><span class="co">#&gt; ── Conflicts ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──</span></a>
+<a class="sourceLine" id="cb2-8" title="8"><span class="co">#&gt; ✖ dplyr::filter() masks stats::filter()</span></a>
+<a class="sourceLine" id="cb2-9" title="9"><span class="co">#&gt; ✖ dplyr::lag()    masks stats::lag()</span></a>
+<a class="sourceLine" id="cb2-10" title="10"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(rio) <span class="co"># import/export </span></a>
+<a class="sourceLine" id="cb2-11" title="11"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(datasets) <span class="co"># a package of toy datasets</span></a></code></pre></div>
 </div>
 <div id="tidy-approach-to-data" class="section level2">
 <h2 class="hasAnchor">
@@ -189,14 +163,14 @@
 <a class="sourceLine" id="cb7-2" title="2"><span class="st">  </span><span class="kw">count</span>(vore, order, <span class="dt">sort =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># count `vore` by `order` and sort</span></a>
 <a class="sourceLine" id="cb7-3" title="3"><span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/head">head</a></span>() <span class="co"># top 5 rows</span></a>
 <a class="sourceLine" id="cb7-4" title="4"><span class="co">#&gt; # A tibble: 6 x 3</span></a>
-<a class="sourceLine" id="cb7-5" title="5"><span class="co">#&gt;   vore  order              n</span></a>
-<a class="sourceLine" id="cb7-6" title="6"><span class="co">#&gt;   &lt;chr&gt; &lt;chr&gt;          &lt;int&gt;</span></a>
-<a class="sourceLine" id="cb7-7" title="7"><span class="co">#&gt; 1 herbi Rodentia          16</span></a>
-<a class="sourceLine" id="cb7-8" title="8"><span class="co">#&gt; 2 carni Carnivora         12</span></a>
-<a class="sourceLine" id="cb7-9" title="9"><span class="co">#&gt; 3 omni  Primates          10</span></a>
-<a class="sourceLine" id="cb7-10" title="10"><span class="co">#&gt; 4 herbi Artiodactyla       5</span></a>
-<a class="sourceLine" id="cb7-11" title="11"><span class="co">#&gt; 5 carni Cetacea            3</span></a>
-<a class="sourceLine" id="cb7-12" title="12"><span class="co">#&gt; 6 herbi Perissodactyla     3</span></a></code></pre></div>
+<a class="sourceLine" id="cb7-5" title="5"><span class="co">#&gt;   vore  order            n</span></a>
+<a class="sourceLine" id="cb7-6" title="6"><span class="co">#&gt;   &lt;chr&gt; &lt;chr&gt;        &lt;int&gt;</span></a>
+<a class="sourceLine" id="cb7-7" title="7"><span class="co">#&gt; 1 herbi Rodentia        16</span></a>
+<a class="sourceLine" id="cb7-8" title="8"><span class="co">#&gt; 2 carni Carnivora       12</span></a>
+<a class="sourceLine" id="cb7-9" title="9"><span class="co">#&gt; 3 omni  Primates        10</span></a>
+<a class="sourceLine" id="cb7-10" title="10"><span class="co">#&gt; 4 herbi Artiodactyla     5</span></a>
+<a class="sourceLine" id="cb7-11" title="11"><span class="co">#&gt; 5 &lt;NA&gt;  Rodentia         3</span></a>
+<a class="sourceLine" id="cb7-12" title="12"><span class="co">#&gt; 6 carni Cetacea          3</span></a></code></pre></div>
 <p>This table summary might start to get a little unwieldy, so a graphical approach may be in order.</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1">msleep <span class="op">%&gt;%</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb8-2" title="2"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> order, <span class="dt">fill =</span> vore)) <span class="op">+</span><span class="st"> </span><span class="co"># map `order` to x, and `vore` as fill for the bars</span></a>
