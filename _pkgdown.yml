@@ -1,0 +1,52 @@
+template:
+  params:
+    bootswatch: cosmo
+reference:
+- title: Functions
+  desc: ~
+  contents:
+  - '`get_compressed_data`'
+- title: Data
+  desc: ~
+  contents:
+  - '`brown`'
+  - '`brown_words`'
+  - '`sbc`'
+  - '`sdac`'
+  - '`sdac_files`'
+  - '`sdac_files_partial`'
+  - '`sdac_speaker_meta`'
+  - '`sms`'
+articles:
+- title: Literate programming
+  desc: ~
+  contents:
+  - '`short_note_on_literate_programming`'
+- title: Working with data
+  desc: ~
+  contents:
+  - '`getting-data-in-and-out-of-r`'
+  - '`data-the-tidy-and-the-untidy`'
+  - '`first-steps-in-wrangling-data`'
+- title: Data visualization
+  desc: ~
+  contents:
+  - '`basics-of-the-grammar-of-graphics`'
+- title: Analysis
+  desc: ~
+  contents:
+  - '`analysis-an-inference-example`'
+  - '`analysis-an-exploratory-example`'
+  - '`analysis-a-prediction-example`'
+navbar:
+  title: "Data Analysis with R"
+  left:
+    - icon: fa-home fa-lg
+      href: index.html
+    - text: "Reference"
+      href: reference/index.html
+    - text: "Articles"
+      href: articles/index.html
+  right:
+    - icon: fa-github fa-lg
+      href: https://github.com/WFU-TLC/analyzr
